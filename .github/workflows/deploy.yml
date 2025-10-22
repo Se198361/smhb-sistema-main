@@ -1,0 +1,43 @@
+name: Build and Migrate
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-and-migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: smhb-sistema-main
+
+      - name: Generate Prisma client
+        run: npx prisma generate
+        working-directory: smhb-sistema-main
+
+      - name: Run Prisma migrations (deploy)
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: npx prisma migrate deploy
+        working-directory: smhb-sistema-main
+
+      - name: Build frontend
+        run: npm run build
+        working-directory: smhb-sistema-main
+
+      # Opcional: deploy via Netlify CLI (necessita secrets NETLIFY_AUTH_TOKEN e NETLIFY_SITE_ID)
+      # - name: Deploy to Netlify
+      #   run: |
+      #     npm install -g netlify-cli
+      #     netlify deploy --prod --dir=dist --site ${{ secrets.NETLIFY_SITE_ID }} --auth ${{ secrets.NETLIFY_AUTH_TOKEN }}
+      #   working-directory: smhb-sistema-main
