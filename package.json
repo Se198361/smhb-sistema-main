@@ -1,8 +1,16 @@
 {
-  "name": "smhb.json",
+  "name": "smhb-sistema",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
+  "description": "Sistema de gerenciamento para igrejas com funcionalidades completas de administração",
+  "keywords": ["react", "vite", "supabase", "nodejs", "express", "church-management"],
+  "author": "SMHB Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Se198361/smhb-sistema.git"
+  },
   "scripts": {
     "dev": "vite --port 5174",
     "build": "vite build",
