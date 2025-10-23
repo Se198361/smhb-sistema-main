@@ -5,9 +5,9 @@ Sistema de gerenciamento para igrejas com funcionalidades completas de administr
 ## Tecnologias Utilizadas
 
 - **Frontend**: React + Vite
-- **Backend**: Node.js com Express
+- **Backend**: Supabase (Functions e Database)
 - **Banco de Dados**: Supabase (PostgreSQL)
-- **Autenticação**: JWT
+- **Autenticação**: Supabase Auth
 - **Estilização**: Tailwind CSS
 
 ## Funcionalidades
@@ -46,24 +46,34 @@ Sistema de gerenciamento para igrejas com funcionalidades completas de administr
 
 4. **Execute o projeto**
    ```bash
-   # Iniciar o servidor backend
-   npm run server
-   
-   # Em outro terminal, iniciar o frontend
    npm run dev
    ```
+
+## Estrutura do Banco de Dados
+
+O sistema utiliza as seguintes tabelas no Supabase:
+
+- **Usuario**: Armazena informações dos usuários
+- **Aviso**: Armazena avisos e notificações
+- **Membro**: Armazena informações dos membros da igreja
+- **Evento**: Armazena eventos e programações
+- **Diretoria**: Armazena informações da diretoria
+- **Financa**: Armazena registros financeiros
+- **Conteudo**: Armazena conteúdos diversos
+- **Cracha**: Armazena registros de crachás
+- **Embaixador**: Armazena informações dos embaixadores
+- **BadgeTemplate**: Armazena templates de crachás
 
 ## Deploy
 
 ### Vercel (Frontend)
 O frontend pode ser implantado diretamente na Vercel seguindo as configurações padrão.
 
-### Backend
-O backend pode ser implantado em qualquer serviço que suporte Node.js, como:
-- Railway
-- Render
-- Heroku
-- Servidor próprio
+### Backend (Supabase)
+Todas as funcionalidades de backend foram migradas para o Supabase usando:
+- Supabase Database para armazenamento de dados
+- Supabase Auth para autenticação
+- Funções SQL personalizadas para lógica de negócios
 
 ## Estrutura do Projeto
 
@@ -72,6 +82,9 @@ src/
 ├── components/     # Componentes React reutilizáveis
 ├── context/        # Contextos do React (autenticação, etc.)
 ├── lib/            # Funções auxiliares e configurações
+│   ├── supabase.js          # Configuração do cliente Supabase
+│   ├── supabaseFunctions.js # Funções para interagir com o Supabase
+│   └── api.js               # API wrapper para compatibilidade
 ├── pages/          # Páginas da aplicação
 └── App.jsx         # Componente principal
 ```
@@ -82,6 +95,18 @@ src/
 
 - `npm run dev` - Inicia o servidor de desenvolvimento do frontend
 - `npm run build` - Compila o projeto para produção
-- `npm run server` - Inicia o servidor backend
-- `npm run prisma:generate` - Gera o cliente Prisma
-- `npm run prisma:migrate:dev` - Executa migrações do banco de dados
+- `npm run prisma:generate` - Gera o cliente Prisma (mantido para compatibilidade)
+- `npm run prisma:migrate:dev` - Executa migrações do banco de dados (mantido para compatibilidade)
+
+## Migração para Supabase
+
+Este projeto foi migrado de uma arquitetura com backend Express para utilizar totalmente o Supabase como backend:
+
+1. **Banco de Dados**: Todas as tabelas foram criadas no Supabase
+2. **Autenticação**: Substituída para usar Supabase Auth
+3. **Funções**: Criadas funções SQL personalizadas para lógica de negócios
+4. **API**: Atualizada para usar o cliente Supabase diretamente
+
+Os arquivos de migração estão disponíveis em:
+- [SUPABASE_SCHEMA.sql](file:///c:/Users/sergi/Downloads/smhb-sistema-main/smhb-sistema-main/SUPABASE_SCHEMA.sql) - Schema do banco de dados
+- [SUPABASE_FUNCTIONS.sql](file:///c:/Users/sergi/Downloads/smhb-sistema-main/smhb-sistema-main/SUPABASE_FUNCTIONS.sql) - Funções SQL personalizadas

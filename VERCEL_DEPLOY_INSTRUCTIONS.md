@@ -26,58 +26,22 @@ Na seção "Environment Variables" da Vercel, adicione as seguintes variáveis:
 ```
 VITE_SUPABASE_URL=https://kkyryjkjynjbhbcespzo.supabase.co
 VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtreXJ5amtqeW5qYmhiY2VzcHpvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjEyNTI4ODcsImV4cCI6MjA3NjgyODg4N30.jAqPEJmd5lvwn_3jFKBRY0OQ-MO4R_VtJ71-Uc2dynk
-VITE_API_BASE=https://SEU-BACKEND-URL
 ```
 
-### 3. Configurar Redirecionamentos
+### 3. Deploy
 
-Certifique-se de que o arquivo `vercel.json` está configurado corretamente:
-
-```json
-{
-  "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "/api/$1"
-    }
-  ]
-}
-```
-
-### 4. Deploy do Backend
-
-O backend precisa ser implantado separadamente. Você pode usar serviços como:
-- Railway (https://railway.app)
-- Render (https://render.com)
-- Heroku (https://heroku.com)
-- Servidor próprio com Node.js
-
-### 5. Configurar Variáveis de Ambiente do Backend
-
-No serviço onde você implantar o backend, configure as seguintes variáveis de ambiente:
-
-```
-DATABASE_URL=postgresql://postgres.d83e7f0734077cf861957776e0b3cd13ae93d874@aws-0-sa-east-1.pooler.supabase.com:6543/postgres?sslmode=require&pgbouncer=true
-SUPABASE_URL=https://kkyryjkjynjbhbcespzo.supabase.co
-SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtreXJ5amtqeW5qYmhiY2VzcHpvIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MTI1Mjg4NywiZXhwIjoyMDc2ODI4ODg3fQ.9J9u7V5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5
-PORT=3001
-JWT_SECRET=seu_segredo_jwt
-APP_BASE_URL=https://seu-projeto.vercel.app
-```
-
-### 6. Executar Migrações do Banco de Dados
-
-Após configurar o backend, execute as migrações do Prisma:
-
-```bash
-npx prisma migrate deploy
-```
+Clique em "Deploy" e aguarde a conclusão do processo.
 
 ## Configuração do Supabase
 
 ### 1. Criar Tabelas
 
-As tabelas serão criadas automaticamente pelas migrações do Prisma, mas você também pode criá-las manualmente no dashboard do Supabase.
+As tabelas devem ser criadas no Supabase executando os scripts SQL:
+
+1. Acesse o dashboard do Supabase
+2. Vá para "SQL Editor"
+3. Execute o script [SUPABASE_SCHEMA.sql](file:///c:/Users/sergi/Downloads/smhb-sistema-main/smhb-sistema-main/SUPABASE_SCHEMA.sql)
+4. Execute o script [SUPABASE_FUNCTIONS.sql](file:///c:/Users/sergi/Downloads/smhb-sistema-main/smhb-sistema-main/SUPABASE_FUNCTIONS.sql)
 
 ### 2. Configurar Políticas de Segurança
 
@@ -88,19 +52,24 @@ Configure as políticas de segurança (RLS - Row Level Security) no dashboard do
 3. Para cada tabela, habilite "Enable Realtime" e "Enable Row Level Security"
 4. Configure as políticas de acesso conforme necessário
 
+### 3. Configurar Autenticação
+
+1. No dashboard do Supabase, vá para "Authentication" → "Settings"
+2. Configure as opções conforme necessário
+3. Em "URLs", adicione a URL do seu frontend (ex: https://seu-projeto.vercel.app)
+
 ## Troubleshooting
 
 ### Problemas Comuns
 
-1. **Erro de CORS**: Certifique-se de que a variável `APP_BASE_URL` no backend está configurada com a URL correta da Vercel.
+1. **Erro de CORS**: Certifique-se de que a URL do frontend está configurada corretamente no Supabase Auth.
 
-2. **Erro de Conexão com Banco de Dados**: Verifique se a `DATABASE_URL` está correta e se o Supabase está acessível.
+2. **Erro de Conexão com Banco de Dados**: Verifique se as variáveis de ambiente estão corretas.
 
-3. **Erro 404 em Rotas da API**: Verifique se o arquivo `vercel.json` está configurado corretamente.
+3. **Funções não encontradas**: Certifique-se de que os scripts SQL foram executados no Supabase.
 
 ### Suporte
 
 Se precisar de ajuda adicional, consulte a documentação:
 - Vercel: https://vercel.com/docs
 - Supabase: https://supabase.com/docs
-- Prisma: https://www.prisma.io/docs

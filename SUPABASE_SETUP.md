@@ -23,148 +23,23 @@
    - User: postgres.d83e7f0734077cf861957776e0b3cd13ae93d874
    - Password: sbp_d83e7f0734077cf861957776e0b3cd13ae93d874
 
-#### Criar Tabelas com Prisma
+#### Criar Tabelas
 
-Para criar as tabelas automaticamente usando Prisma:
+Para criar as tabelas automaticamente:
 
-1. Configure as variáveis de ambiente no seu ambiente de desenvolvimento:
-   ```
-   DATABASE_URL=postgresql://postgres.d83e7f0734077cf861957776e0b3cd13ae93d874@aws-0-sa-east-1.pooler.supabase.com:6543/postgres?sslmode=require&pgbouncer=true
-   ```
+1. Acesse o dashboard do Supabase
+2. Vá para "SQL Editor"
+3. Cole o conteúdo do arquivo [SUPABASE_SCHEMA.sql](file:///c:/Users/sergi/Downloads/smhb-sistema-main/smhb-sistema-main/SUPABASE_SCHEMA.sql)
+4. Execute o script
 
-2. Execute as migrações:
-   ```bash
-   npx prisma migrate deploy
-   ```
+#### Criar Funções
 
-#### Criar Tabelas Manualmente (Opcional)
+Para criar as funções personalizadas:
 
-Se preferir criar as tabelas manualmente, use o SQL abaixo:
-
-```sql
--- Tabela Avisos
-CREATE TABLE "Aviso" (
-  "id" SERIAL PRIMARY KEY,
-  "titulo" TEXT NOT NULL,
-  "conteudo" TEXT,
-  "descricao" TEXT,
-  "inicio" TIMESTAMP WITH TIME ZONE,
-  "fim" TIMESTAMP WITH TIME ZONE,
-  "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  "updatedAt" TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- Tabela Membros
-CREATE TABLE "Membro" (
-  "id" SERIAL PRIMARY KEY,
-  "nome" TEXT NOT NULL,
-  "endereco" TEXT NOT NULL,
-  "telefone" TEXT NOT NULL,
-  "aniversario" TIMESTAMP WITH TIME ZONE,
-  "foto" TEXT,
-  "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  "updatedAt" TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- Tabela Eventos
-CREATE TABLE "Evento" (
-  "id" SERIAL PRIMARY KEY,
-  "titulo" TEXT NOT NULL,
-  "data" TIMESTAMP WITH TIME ZONE NOT NULL,
-  "horario" TEXT,
-  "local" TEXT NOT NULL,
-  "comparecido" BOOLEAN DEFAULT false,
-  "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  "updatedAt" TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- Tabela Diretoria
-CREATE TABLE "Diretoria" (
-  "id" SERIAL PRIMARY KEY,
-  "nome" TEXT NOT NULL,
-  "cargo" TEXT NOT NULL,
-  "foto" TEXT,
-  "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  "updatedAt" TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- Tabela Financas
-CREATE TABLE "Financa" (
-  "id" SERIAL PRIMARY KEY,
-  "tipo" TEXT NOT NULL,
-  "valor" DOUBLE PRECISION NOT NULL,
-  "data" TIMESTAMP WITH TIME ZONE NOT NULL,
-  "pagante" TEXT NOT NULL,
-  "uso" TEXT,
-  "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  "updatedAt" TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- Tabela Conteudo
-CREATE TABLE "Conteudo" (
-  "id" SERIAL PRIMARY KEY,
-  "tipo" TEXT NOT NULL,
-  "titulo" TEXT NOT NULL,
-  "data" TIMESTAMP WITH TIME ZONE NOT NULL,
-  "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  "updatedAt" TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- Tabela Usuario
-CREATE TABLE "Usuario" (
-  "id" SERIAL PRIMARY KEY,
-  "email" TEXT UNIQUE NOT NULL,
-  "senhaHash" TEXT NOT NULL,
-  "nome" TEXT,
-  "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  "updatedAt" TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- Tabela Cracha
-CREATE TABLE "Cracha" (
-  "id" SERIAL PRIMARY KEY,
-  "nome" TEXT NOT NULL,
-  "front" TEXT NOT NULL,
-  "back" TEXT,
-  "origem" TEXT DEFAULT 'CRACHAS',
-  "embaixadorId" INTEGER,
-  "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  "updatedAt" TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- Tabela Embaixador
-CREATE TABLE "Embaixador" (
-  "id" SERIAL PRIMARY KEY,
-  "nome" TEXT NOT NULL,
-  "idade" INTEGER,
-  "telefone" TEXT,
-  "foto" TEXT,
-  "pai" TEXT,
-  "mae" TEXT,
-  "templateFrontId" INTEGER,
-  "templateBackId" INTEGER,
-  "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  "updatedAt" TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- Tabela BadgeTemplate
-CREATE TABLE "BadgeTemplate" (
-  "id" SERIAL PRIMARY KEY,
-  "page" TEXT NOT NULL,
-  "lado" TEXT NOT NULL,
-  "name" TEXT,
-  "img" TEXT NOT NULL,
-  "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  "updatedAt" TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- Adicionar chaves estrangeiras
-ALTER TABLE "Cracha" ADD CONSTRAINT "Cracha_embaixadorId_fkey" FOREIGN KEY ("embaixadorId") REFERENCES "Embaixador"("id");
-
-ALTER TABLE "Embaixador" ADD CONSTRAINT "Embaixador_templateFrontId_fkey" FOREIGN KEY ("templateFrontId") REFERENCES "BadgeTemplate"("id");
-
-ALTER TABLE "Embaixador" ADD CONSTRAINT "Embaixador_templateBackId_fkey" FOREIGN KEY ("templateBackId") REFERENCES "BadgeTemplate"("id");
-```
+1. Acesse o dashboard do Supabase
+2. Vá para "SQL Editor"
+3. Cole o conteúdo do arquivo [SUPABASE_FUNCTIONS.sql](file:///c:/Users/sergi/Downloads/smhb-sistema-main/smhb-sistema-main/SUPABASE_FUNCTIONS.sql)
+4. Execute o script
 
 ### 3. Configurar Políticas de Segurança (RLS)
 
@@ -186,7 +61,7 @@ CREATE POLICY "Usuários podem visualizar seus próprios dados" ON "Usuario"
   FOR SELECT USING (auth.uid() = id);
 
 CREATE POLICY "Usuários podem inserir seus próprios dados" ON "Usuario"
-  FOR INSERT WITH CHECK (auth.uid() = id);
+  FOR INSERT WITH CHECK (auth.role() = 'authenticated');
 
 CREATE POLICY "Usuários podem atualizar seus próprios dados" ON "Usuario"
   FOR UPDATE USING (auth.uid() = id);
@@ -230,9 +105,13 @@ testConnection()
 
 1. **Erro de conexão**: Verifique se a URL e a chave estão corretas
 2. **Permissões insuficientes**: Configure as políticas RLS corretamente
-3. **Tabelas não encontradas**: Certifique-se de que as migrações foram executadas
+3. **Tabelas não encontradas**: Certifique-se de que os scripts foram executados
+4. **Funções não encontradas**: Certifique-se de que os scripts de funções foram executados
 
 ### Suporte
 
 Para mais informações, consulte a documentação oficial do Supabase:
 - https://supabase.com/docs
+
+Veja também o guia de migração completo:
+- [SUPABASE_MIGRATION_GUIDE.md](file:///c:/Users/sergi/Downloads/smhb-sistema-main/smhb-sistema-main/SUPABASE_MIGRATION_GUIDE.md)

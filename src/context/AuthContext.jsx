@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
-import { getJson, postJson, setAuthToken } from '../lib/api'
+import { supabase } from '../lib/supabase'
 import { AuthContext } from './authContext'
+import { registerUser, loginUser, getCurrentUser, logoutUser } from '../lib/supabaseFunctions'
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
@@ -14,42 +15,70 @@ export function AuthProvider({ children }) {
       return
     }
 
-    const token = localStorage.getItem('token')
-    if (token) {
-      setAuthToken(token)
-      getJson('/api/auth/me')
-        .then(({ user }) => setUser(user))
-        .catch(() => {
-          localStorage.removeItem('token')
-          setAuthToken(null)
+    // Verificar sessão atual
+    const checkSession = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession()
+        if (session) {
+          const userData = await getCurrentUser()
+          setUser(userData)
+        }
+      } catch (error) {
+        console.error('Erro ao verificar sessão:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    checkSession()
+
+    // Escutar mudanças na autenticação
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session) {
+        getCurrentUser().then(userData => {
+          setUser(userData)
+        }).catch(error => {
+          console.error('Erro ao buscar usuário:', error)
           setUser(null)
         })
-        .finally(() => setLoading(false))
-    } else {
+      } else {
+        setUser(null)
+      }
       setLoading(false)
+    })
+
+    return () => {
+      subscription.unsubscribe()
     }
   }, [])
 
   async function login(email, password) {
-    const { token, user } = await postJson('/api/auth/login', { email, password })
-    localStorage.setItem('token', token)
-    setAuthToken(token)
-    setUser(user)
-    return user
+    try {
+      const result = await loginUser(email, password)
+      setUser(result.user)
+      return result.user
+    } catch (error) {
+      throw error
+    }
   }
 
   async function register(nome, email, password) {
-    const { token, user } = await postJson('/api/auth/register', { nome, email, password })
-    localStorage.setItem('token', token)
-    setAuthToken(token)
-    setUser(user)
-    return user
+    try {
+      const result = await registerUser(nome, email, password)
+      setUser(result.user)
+      return result.user
+    } catch (error) {
+      throw error
+    }
   }
 
   async function signOut() {
-    localStorage.removeItem('token')
-    setAuthToken(null)
-    setUser(null)
+    try {
+      await logoutUser()
+      setUser(null)
+    } catch (error) {
+      console.error('Erro ao fazer logout:', error)
+    }
   }
 
   const value = { user, loading, login, register, signOut }

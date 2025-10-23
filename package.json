@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "type": "module",
   "description": "Sistema de gerenciamento para igrejas com funcionalidades completas de administração",
-  "keywords": ["react", "vite", "supabase", "nodejs", "express", "church-management"],
+  "keywords": ["react", "vite", "supabase", "nodejs", "church-management"],
   "author": "SMHB Team",
   "license": "MIT",
   "repository": {
@@ -15,20 +15,10 @@
     "dev": "vite --port 5174",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview",
-    "server": "node server/index.js",
-    "prisma:generate": "prisma generate",
-    "prisma:migrate:dev": "prisma migrate dev --name init",
-    "prisma:migrate:deploy": "prisma migrate deploy"
+    "preview": "vite preview"
   },
   "dependencies": {
-    "@prisma/client": "6.17.1",
     "@supabase/supabase-js": "^2.74.0",
-    "bcryptjs": "^3.0.2",
-    "dotenv": "17.2.3",
-    "express": "5.1.0",
-    "jsonwebtoken": "^9.0.2",
-    "nodemailer": "^7.0.9",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-router-dom": "^7.9.3"
@@ -43,9 +33,7 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.22",
     "globals": "^16.4.0",
-    "nodemon": "3.1.10",
     "postcss": "^8.5.6",
-    "prisma": "6.17.1",
     "tailwindcss": "^3.4.18",
     "vite": "npm:rolldown-vite@7.1.14"
   },
