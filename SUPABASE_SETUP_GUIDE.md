@@ -86,6 +86,8 @@ Para testar as operações CRUD:
 
 ## Solução de Problemas
 
+Se você encontrar problemas, consulte o guia detalhado em [TROUBLESHOOTING_GUIDE.md](file:///c:/Users/sergi/Downloads/smhb-sistema-main/smhb-sistema-main/TROUBLESHOOTING_GUIDE.md).
+
 ### Erro: "Could not find the table 'public.Usuario' in the schema cache"
 
 Se você encontrar este erro:
@@ -110,6 +112,13 @@ Este erro ocorre devido a incompatibilidade de tipos entre `auth.uid()` (UUID) e
 
 1. Use o script [CONFIGURE_RLS_POLICIES.sql](file:///c:/Users/sergi/Downloads/smhb-sistema-main/smhb-sistema-main/CONFIGURE_RLS_POLICIES.sql) corrigido, que faz a conversão de tipos adequada usando `::text`
 2. Execute o script no "SQL Editor" do Supabase
+
+### Problemas de Visualização de Dados
+
+Se não conseguir visualizar os dados:
+
+1. Execute o script [FIX_RLS_POLICIES.sql](file:///c:/Users/sergi/Downloads/smhb-sistema-main/smhb-sistema-main/FIX_RLS_POLICIES.sql) para criar políticas mais permissivas temporariamente
+2. Verifique se há dados nas tabelas usando o script [DEBUG_RLS_POLICIES.sql](file:///c:/Users/sergi/Downloads/smhb-sistema-main/smhb-sistema-main/DEBUG_RLS_POLICIES.sql)
 
 ### Problemas com Autenticação
 
