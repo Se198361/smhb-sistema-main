@@ -1,0 +1,130 @@
+# Guia Completo de Configuração do Supabase
+
+Este guia irá ajudá-lo a configurar todas as tabelas e funcionalidades necessárias para o projeto SMHB no Supabase.
+
+## Passo 1: Acessar o Dashboard do Supabase
+
+1. Acesse [https://supabase.com](https://supabase.com)
+2. Faça login na sua conta
+3. Crie um novo projeto (caso ainda não tenha um) com as seguintes configurações:
+   - Nome do projeto: `smhb-sistema`
+   - Senha do banco de dados: Use uma senha segura
+   - Região: Escolha a região mais próxima de você
+
+## Passo 2: Configurar as Variáveis de Ambiente
+
+No arquivo [.env](file:///c:/Users/sergi/Downloads/smhb-sistema-main/smhb-sistema-main/.env) do seu projeto, atualize com as informações do seu projeto Supabase:
+
+```env
+VITE_SUPABASE_URL=SUA_URL_DO_PROJETO_SUPABASE
+VITE_SUPABASE_ANON_KEY=SUA_CHAVE_ANONIMA
+SUPABASE_URL=SUA_URL_DO_PROJETO_SUPABASE
+SUPABASE_SERVICE_ROLE_KEY=SUA_CHAVE_DE_SERVIÇO
+DATABASE_URL=SUA_URL_DO_BANCO_DE_DADOS
+```
+
+Você pode encontrar essas informações no dashboard do Supabase:
+- Vá para "Project Settings" → "API"
+- Copie a "Project URL" para `VITE_SUPABASE_URL` e `SUPABASE_URL`
+- Copie a "anon public" key para `VITE_SUPABASE_ANON_KEY`
+- Copie a "service_role secret" para `SUPABASE_SERVICE_ROLE_KEY`
+
+## Passo 3: Criar as Tabelas
+
+1. No dashboard do Supabase, vá para "SQL Editor"
+2. Copie e cole o conteúdo do arquivo [SUPABASE_SCHEMA.sql](file:///c:/Users/sergi/Downloads/smhb-sistema-main/smhb-sistema-main/SUPABASE_SCHEMA.sql)
+3. Clique em "Run" para executar o script
+
+Este script irá criar todas as tabelas necessárias:
+- Usuario
+- Aviso
+- Membro
+- Evento
+- Diretoria
+- Financa
+- Conteudo
+- Cracha
+- Embaixador
+- BadgeTemplate
+
+## Passo 4: Configurar as Políticas de Segurança (RLS)
+
+1. Ainda no "SQL Editor", copie e cole o conteúdo do arquivo [CONFIGURE_RLS_POLICIES.sql](file:///c:/Users/sergi/Downloads/smhb-sistema-main/smhb-sistema-main/CONFIGURE_RLS_POLICIES.sql)
+2. Clique em "Run" para executar o script
+
+Este script irá configurar as políticas de segurança para todas as tabelas, garantindo que apenas usuários autenticados possam acessar os dados conforme necessário.
+
+## Passo 5: Verificar as Tabelas Criadas
+
+1. No dashboard do Supabase, vá para "Table Editor"
+2. Verifique se todas as tabelas foram criadas corretamente
+3. Clique em cada tabela para verificar suas colunas e estrutura
+
+## Passo 6: Testar a Conexão
+
+1. No seu terminal, na raiz do projeto, execute:
+   ```bash
+   npm run dev
+   ```
+2. Acesse [http://localhost:5174](http://localhost:5174)
+3. Tente fazer o cadastro de um novo usuário
+4. Faça login com o usuário criado
+
+## Passo 7: Inserir Dados de Teste (Opcional)
+
+Se quiser inserir dados de teste:
+
+1. No "SQL Editor" do Supabase, copie e cole o conteúdo do arquivo [INSERT_TEST_DATA.sql](file:///c:/Users/sergi/Downloads/smhb-sistema-main/smhb-sistema-main/INSERT_TEST_DATA.sql)
+2. Clique em "Run" para executar o script
+
+## Passo 8: Testar Operações CRUD (Opcional)
+
+Para testar as operações CRUD:
+
+1. No "SQL Editor" do Supabase, copie e cole o conteúdo do arquivo [TEST_CRUD_OPERATIONS.sql](file:///c:/Users/sergi/Downloads/smhb-sistema-main/smhb-sistema-main/TEST_CRUD_OPERATIONS.sql)
+2. Clique em "Run" para executar o script
+
+## Solução de Problemas
+
+### Erro: "Could not find the table 'public.Usuario' in the schema cache"
+
+Se você encontrar este erro:
+
+1. Verifique se as tabelas foram criadas corretamente no "Table Editor"
+2. Reinicie o servidor de desenvolvimento:
+   ```bash
+   npm run dev
+   ```
+3. Verifique se as variáveis de ambiente estão corretas no arquivo [.env](file:///c:/Users/sergi/Downloads/smhb-sistema-main/smhb-sistema-main/.env)
+
+### Problemas com Autenticação
+
+Se tiver problemas com autenticação:
+
+1. Verifique se as políticas RLS foram configuradas corretamente
+2. No dashboard do Supabase, vá para "Authentication" → "Settings"
+3. Certifique-se de que as configurações estão corretas
+
+### Problemas com Conexão
+
+Se tiver problemas de conexão:
+
+1. Verifique se a URL do projeto e as chaves estão corretas
+2. Verifique se o projeto Supabase está ativo
+3. Verifique se não há restrições de rede/firewall
+
+## Suporte Adicional
+
+Se precisar de ajuda adicional:
+
+1. Verifique os logs do console do navegador (F12)
+2. Verifique os logs do terminal onde está rodando o projeto
+3. Consulte a documentação oficial do Supabase em [https://supabase.com/docs](https://supabase.com/docs)
+
+## Próximos Passos
+
+Após configurar o Supabase:
+
+1. Faça o deploy do frontend na Vercel
+2. Configure variáveis de ambiente na Vercel
+3. Teste todas as funcionalidades em produção

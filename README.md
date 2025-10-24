@@ -64,47 +64,16 @@ O sistema utiliza as seguintes tabelas no Supabase:
 - **Embaixador**: Armazena informações dos embaixadores
 - **BadgeTemplate**: Armazena templates de crachás
 
-## Criação das Tabelas no Supabase
+## Configuração Completa do Supabase
 
-Para criar todas as tabelas necessárias no Supabase:
+Para configurar completamente o Supabase, siga o guia detalhado em [SUPABASE_SETUP_GUIDE.md](file:///c:/Users/sergi/Downloads/smhb-sistema-main/smhb-sistema-main/SUPABASE_SETUP_GUIDE.md).
 
-1. Acesse o dashboard do Supabase
-2. Vá para "SQL Editor"
-3. Cole e execute o conteúdo do arquivo [SUPABASE_SCHEMA.sql](file:///c:/Users/sergi/Downloads/smhb-sistema-main/smhb-sistema-main/SUPABASE_SCHEMA.sql)
+### Resumo dos Passos:
 
-## Configuração das Políticas de Segurança (RLS)
-
-Após criar as tabelas, configure as políticas de segurança:
-
-1. Acesse o dashboard do Supabase
-2. Vá para "SQL Editor"
-3. Cole e execute o conteúdo do arquivo [CONFIGURE_RLS_POLICIES.sql](file:///c:/Users/sergi/Downloads/smhb-sistema-main/smhb-sistema-main/CONFIGURE_RLS_POLICIES.sql)
-
-## Testes do Sistema
-
-### 1. Verificar Estrutura das Tabelas
-
-Para verificar se as tabelas e colunas foram criadas corretamente:
-
-1. Acesse o dashboard do Supabase
-2. Vá para "SQL Editor"
-3. Cole e execute o conteúdo do arquivo [VERIFY_TABLES.sql](file:///c:/Users/sergi/Downloads/smhb-sistema-main/smhb-sistema-main/VERIFY_TABLES.sql)
-
-### 2. Inserir Dados de Teste
-
-Para inserir dados de teste:
-
-1. Acesse o dashboard do Supabase
-2. Vá para "SQL Editor"
-3. Cole e execute o conteúdo do arquivo [INSERT_TEST_DATA.sql](file:///c:/Users/sergi/Downloads/smhb-sistema-main/smhb-sistema-main/INSERT_TEST_DATA.sql)
-
-### 3. Testar Operações CRUD
-
-Para testar as operações CRUD:
-
-1. Acesse o dashboard do Supabase
-2. Vá para "SQL Editor"
-3. Cole e execute o conteúdo do arquivo [TEST_CRUD_OPERATIONS.sql](file:///c:/Users/sergi/Downloads/smhb-sistema-main/smhb-sistema-main/TEST_CRUD_OPERATIONS.sql)
+1. **Criar as Tabelas**: Execute o script [SUPABASE_SCHEMA.sql](file:///c:/Users/sergi/Downloads/smhb-sistema-main/smhb-sistema-main/SUPABASE_SCHEMA.sql) no SQL Editor do Supabase
+2. **Configurar Políticas de Segurança**: Execute o script [CONFIGURE_RLS_POLICIES.sql](file:///c:/Users/sergi/Downloads/smhb-sistema-main/smhb-sistema-main/CONFIGURE_RLS_POLICIES.sql)
+3. **Verificar Estrutura**: Use o script [VERIFY_TABLES.sql](file:///c:/Users/sergi/Downloads/smhb-sistema-main/smhb-sistema-main/VERIFY_TABLES.sql) para verificar as tabelas
+4. **Testar o Sistema**: Use os scripts [INSERT_TEST_DATA.sql](file:///c:/Users/sergi/Downloads/smhb-sistema-main/smhb-sistema-main/INSERT_TEST_DATA.sql) e [TEST_CRUD_OPERATIONS.sql](file:///c:/Users/sergi/Downloads/smhb-sistema-main/smhb-sistema-main/TEST_CRUD_OPERATIONS.sql) para testar
 
 ## Deploy
 
