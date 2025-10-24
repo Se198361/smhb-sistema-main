@@ -47,14 +47,31 @@ Este guia ajudará você a identificar e resolver problemas comuns ao configurar
 
 3. **Verifique as políticas RLS:**
    ```sql
-   SELECT tablename, policyname, permissive, roles, cmd
-   FROM pg_policies 
-   WHERE schemaname = 'public'
-   AND tablename IN (
-     'Usuario', 'Aviso', 'Membro', 'Evento', 'Diretoria', 
-     'Financa', 'Conteudo', 'Cracha', 'Embaixador', 'BadgeTemplate'
+   SELECT 
+       n.nspname AS schemaname,
+       c.relname AS tablename,
+       p.polname AS policyname,
+       CASE 
+           WHEN p.polpermissive THEN 'PERMISSIVE'
+           ELSE 'RESTRICTIVE'
+       END AS permissive,
+       pg_get_userbyid(p.polroles[1]) AS roles,
+       CASE p.polcmd
+           WHEN 'r' THEN 'SELECT'
+           WHEN 'a' THEN 'INSERT'
+           WHEN 'w' THEN 'UPDATE'
+           WHEN 'd' THEN 'DELETE'
+           ELSE 'ALL'
+       END AS cmd
+   FROM pg_policy p
+   JOIN pg_class c ON p.polrelid = c.oid
+   JOIN pg_namespace n ON n.oid = c.relnamespace
+   WHERE n.nspname = 'public'
+   AND c.relname IN (
+       'Usuario', 'Aviso', 'Membro', 'Evento', 'Diretoria', 
+       'Financa', 'Conteudo', 'Cracha', 'Embaixador', 'BadgeTemplate'
    )
-   ORDER BY tablename, policyname;
+   ORDER BY c.relname, p.polname;
    ```
 
 ### Soluções:

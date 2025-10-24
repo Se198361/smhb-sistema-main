@@ -2,35 +2,46 @@
 
 -- 1. Verificar se RLS está habilitado para todas as tabelas
 SELECT 
-    tablename, 
-    relrowsecurity as rls_enabled,
-    relforcerowsecurity as force_rls
+    c.relname as table_name, 
+    c.relrowsecurity as rls_enabled,
+    c.relforcerowsecurity as force_rls
 FROM pg_class c
 JOIN pg_namespace n ON n.oid = c.relnamespace
 WHERE n.nspname = 'public' 
-AND tablename IN (
+AND c.relname IN (
     'Usuario', 'Aviso', 'Membro', 'Evento', 'Diretoria', 
     'Financa', 'Conteudo', 'Cracha', 'Embaixador', 'BadgeTemplate'
 )
-ORDER BY tablename;
+ORDER BY c.relname;
 
--- 2. Verificar políticas RLS existentes
+-- 2. Verificar políticas RLS existentes (usando pg_policy diretamente)
 SELECT 
-    schemaname,
-    tablename,
-    policyname,
-    permissive,
-    roles,
-    cmd,
-    qual,
-    with_check
-FROM pg_policies
-WHERE schemaname = 'public'
-AND tablename IN (
+    n.nspname AS schemaname,
+    c.relname AS tablename,
+    p.polname AS policyname,
+    CASE 
+        WHEN p.polpermissive THEN 'PERMISSIVE'
+        ELSE 'RESTRICTIVE'
+    END AS permissive,
+    pg_get_userbyid(p.polroles[1]) AS roles,
+    CASE p.polcmd
+        WHEN 'r' THEN 'SELECT'
+        WHEN 'a' THEN 'INSERT'
+        WHEN 'w' THEN 'UPDATE'
+        WHEN 'd' THEN 'DELETE'
+        ELSE 'ALL'
+    END AS cmd,
+    pg_get_expr(p.polqual, p.polrelid) AS qual,
+    pg_get_expr(p.polwithcheck, p.polrelid) AS with_check
+FROM pg_policy p
+JOIN pg_class c ON p.polrelid = c.oid
+JOIN pg_namespace n ON n.oid = c.relnamespace
+WHERE n.nspname = 'public'
+AND c.relname IN (
     'Usuario', 'Aviso', 'Membro', 'Evento', 'Diretoria', 
     'Financa', 'Conteudo', 'Cracha', 'Embaixador', 'BadgeTemplate'
 )
-ORDER BY tablename, policyname;
+ORDER BY c.relname, p.polname;
 
 -- 3. Verificar permissões de usuários
 SELECT 

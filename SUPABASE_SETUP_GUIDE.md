@@ -120,6 +120,15 @@ Se não conseguir visualizar os dados:
 1. Execute o script [FIX_RLS_POLICIES.sql](file:///c:/Users/sergi/Downloads/smhb-sistema-main/smhb-sistema-main/FIX_RLS_POLICIES.sql) para criar políticas mais permissivas temporariamente
 2. Verifique se há dados nas tabelas usando o script [DEBUG_RLS_POLICIES.sql](file:///c:/Users/sergi/Downloads/smhb-sistema-main/smhb-sistema-main/DEBUG_RLS_POLICIES.sql)
 
+### Scripts de Depuração
+
+Para ajudar na solução de problemas, foram criados scripts de depuração:
+
+1. [DEBUG_RLS_POLICIES.sql](file:///c:/Users/sergi/Downloads/smhb-sistema-main/smhb-sistema-main/DEBUG_RLS_POLICIES.sql) - Verifica políticas RLS, permissões e estrutura das tabelas
+2. [FIX_RLS_POLICIES.sql](file:///c:/Users/sergi/Downloads/smhb-sistema-main/smhb-sistema-main/FIX_RLS_POLICIES.sql) - Cria políticas temporariamente permissivas para resolver problemas de visualização
+
+Execute esses scripts no "SQL Editor" do Supabase para diagnosticar problemas.
+
 ### Problemas com Autenticação
 
 Se tiver problemas com autenticação:
