@@ -49,7 +49,7 @@ Este script irá criar todas as tabelas necessárias:
 
 ## Passo 4: Configurar as Políticas de Segurança (RLS)
 
-1. Ainda no "SQL Editor", copie e cole o conteúdo do arquivo [CONFIGURE_RLS_POLICIES.sql](file:///c:/Users/sergi/Downloads/smhb-sistema-main/smhb-sistema-main/CONFIGURE_RLS_POLICIES.sql)
+1. Ainda no "SQL Editor" do Supabase, copie e cole o conteúdo do arquivo [CONFIGURE_RLS_POLICIES.sql](file:///c:/Users/sergi/Downloads/smhb-sistema-main/smhb-sistema-main/CONFIGURE_RLS_POLICIES.sql)
 2. Clique em "Run" para executar o script
 
 Este script irá configurar as políticas de segurança para todas as tabelas, garantindo que apenas usuários autenticados possam acessar os dados conforme necessário.
@@ -96,6 +96,13 @@ Se você encontrar este erro:
    npm run dev
    ```
 3. Verifique se as variáveis de ambiente estão corretas no arquivo [.env](file:///c:/Users/sergi/Downloads/smhb-sistema-main/smhb-sistema-main/.env)
+
+### Erro de Sintaxe SQL (ERROR: 42601: syntax error at or near "NOT")
+
+Este erro ocorre quando se tenta usar `IF NOT EXISTS` com `CREATE POLICY`. Para resolver:
+
+1. Use o script [CONFIGURE_RLS_POLICIES.sql](file:///c:/Users/sergi/Downloads/smhb-sistema-main/smhb-sistema-main/CONFIGURE_RLS_POLICIES.sql) corrigido, que usa `DROP POLICY IF EXISTS` antes de criar as políticas
+2. Execute o script no "SQL Editor" do Supabase
 
 ### Problemas com Autenticação
 

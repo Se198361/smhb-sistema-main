@@ -159,28 +159,9 @@ ALTER TABLE "Cracha" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "Embaixador" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "BadgeTemplate" ENABLE ROW LEVEL SECURITY;
 
--- Políticas básicas (podem ser ajustadas conforme necessário)
-CREATE POLICY IF NOT EXISTS "Todos podem visualizar avisos" ON "Aviso" 
-  FOR SELECT USING (true);
-
-CREATE POLICY IF NOT EXISTS "Todos podem visualizar diretoria" ON "Diretoria" 
-  FOR SELECT USING (true);
-
-CREATE POLICY IF NOT EXISTS "Todos podem visualizar templates" ON "BadgeTemplate" 
-  FOR SELECT USING (true);
-
--- Políticas para usuários autenticados (exemplo - ajustar conforme necessário)
-CREATE POLICY IF NOT EXISTS "Usuários autenticados podem inserir membros" ON "Membro" 
-  FOR INSERT WITH CHECK (auth.role() = 'authenticated');
-
-CREATE POLICY IF NOT EXISTS "Usuários autenticados podem visualizar membros" ON "Membro" 
-  FOR SELECT USING (auth.role() = 'authenticated');
-
-CREATE POLICY IF NOT EXISTS "Usuários autenticados podem atualizar membros" ON "Membro" 
-  FOR UPDATE USING (auth.role() = 'authenticated');
-
-CREATE POLICY IF NOT EXISTS "Usuários autenticados podem deletar membros" ON "Membro" 
-  FOR DELETE USING (auth.role() = 'authenticated');
+-- Políticas básicas (serão substituídas pelo script CONFIGURE_RLS_POLICIES.sql)
+-- As políticas estão comentadas aqui porque serão configuradas separadamente
+-- para evitar erros de sintaxe
 
 -- Funções e gatilhos para atualizar timestamps
 CREATE OR REPLACE FUNCTION update_updated_at_column()
