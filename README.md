@@ -84,6 +84,7 @@ src/
 ├── lib/            # Funções auxiliares e configurações
 │   ├── supabase.js          # Configuração do cliente Supabase
 │   ├── supabaseFunctions.js # Funções para interagir com o Supabase
+│   ├── supabaseDiagnostics.js # Funções de diagnóstico
 │   └── api.js               # API wrapper para compatibilidade
 ├── pages/          # Páginas da aplicação
 └── App.jsx         # Componente principal
@@ -94,9 +95,6 @@ src/
 ### Scripts Disponíveis
 
 - `npm run dev` - Inicia o servidor de desenvolvimento do frontend
-- `npm run build` - Compila o projeto para produção
-- `npm run prisma:generate` - Gera o cliente Prisma (mantido para compatibilidade)
-- `npm run prisma:migrate:dev` - Executa migrações do banco de dados (mantido para compatibilidade)
 
 ## Migração para Supabase
 
@@ -110,3 +108,35 @@ Este projeto foi migrado de uma arquitetura com backend Express para utilizar to
 Os arquivos de migração estão disponíveis em:
 - [SUPABASE_SCHEMA.sql](file:///c:/Users/sergi/Downloads/smhb-sistema-main/smhb-sistema-main/SUPABASE_SCHEMA.sql) - Schema do banco de dados
 - [SUPABASE_FUNCTIONS.sql](file:///c:/Users/sergi/Downloads/smhb-sistema-main/smhb-sistema-main/SUPABASE_FUNCTIONS.sql) - Funções SQL personalizadas
+
+## Solução de Problemas
+
+### Erro: "Could not find the table 'public.Usuario' in the schema cache"
+
+Este erro ocorre quando o cliente Supabase não consegue encontrar a tabela no cache de schema. Para resolver:
+
+1. **Verifique se as tabelas foram criadas**:
+   - Acesse o dashboard do Supabase
+   - Vá para "Table Editor"
+   - Verifique se a tabela "Usuario" existe
+
+2. **Execute o script de criação de tabelas**:
+   - Acesse o dashboard do Supabase
+   - Vá para "SQL Editor"
+   - Cole e execute o conteúdo do arquivo [SUPABASE_SCHEMA.sql](file:///c:/Users/sergi/Downloads/smhb-sistema-main/smhb-sistema-main/SUPABASE_SCHEMA.sql)
+
+3. **Atualize o cache de schema**:
+   - Reinicie o servidor de desenvolvimento (`npm run dev`)
+   - Ou acesse a página de diagnóstico em ambiente de desenvolvimento (`/diagnostico`)
+
+4. **Verifique as permissões**:
+   - Certifique-se de que as políticas RLS estão configuradas corretamente
+   - Verifique se o usuário tem permissões para acessar a tabela
+
+5. **Use a página de diagnóstico**:
+   - Em ambiente de desenvolvimento, acesse `/diagnostico` para verificar:
+     - Se as tabelas existem
+     - Se as colunas estão corretas
+     - Se a conexão está funcionando
+
+Se o problema persistir, verifique os logs do console para obter mais detalhes sobre o erro.

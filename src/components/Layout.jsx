@@ -45,6 +45,10 @@ export default function Layout() {
             <NavLink to="/crachas" className={({ isActive }) => `${isActive ? 'text-accent' : 'text-primary dark:text-light'} soft-link`}>Crachás</NavLink>
             <NavLink to="/embaixadores" className={({ isActive }) => `${isActive ? 'text-accent' : 'text-primary dark:text-light'} soft-link`}>Embaixadores</NavLink>
             <NavLink to="/diretoria" className={({ isActive }) => `${isActive ? 'text-accent' : 'text-primary dark:text-light'} soft-link`}>Diretoria</NavLink>
+            {/* Link para diagnóstico apenas em ambiente de desenvolvimento */}
+            {import.meta.env.DEV && (
+              <NavLink to="/diagnostico" className={({ isActive }) => `${isActive ? 'text-accent' : 'text-primary dark:text-light'} soft-link`}>Diagnóstico</NavLink>
+            )}
             {!user && (
               <NavLink to="/cadastro" className={({ isActive }) => `${isActive ? 'text-accent' : 'text-primary dark:text-light'} soft-link`}>Cadastro</NavLink>
             )}

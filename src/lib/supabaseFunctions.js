@@ -1,5 +1,24 @@
 import { supabase } from './supabase'
 
+// Função auxiliar para tratamento de erros detalhado
+function handleSupabaseError(error, operation, table = '') {
+  if (!error) return null;
+  
+  console.error(`[Supabase Error] ${operation} em ${table || 'operação'}:`, {
+    code: error.code,
+    message: error.message,
+    details: error.details,
+    hint: error.hint
+  });
+  
+  // Tratamento específico para erros de schema
+  if (error.message && error.message.includes('could not find the table')) {
+    return new Error(`Tabela '${table}' não encontrada. Verifique se ela foi criada corretamente no Supabase.`);
+  }
+  
+  return error;
+}
+
 // Funções de autenticação
 export async function registerUser(nome, email, password) {
   try {
@@ -9,6 +28,11 @@ export async function registerUser(nome, email, password) {
       .select('id')
       .eq('email', email)
       .single()
+
+    if (existingUserError && existingUserError.code !== 'PGRST116') {
+      const handledError = handleSupabaseError(existingUserError, 'Verificação de email existente', 'Usuario');
+      throw handledError;
+    }
 
     if (existingUser && !existingUserError) {
       throw new Error('Email já cadastrado')
@@ -40,7 +64,10 @@ export async function registerUser(nome, email, password) {
       .select()
       .single()
 
-    if (userError) throw userError
+    if (userError) {
+      const handledError = handleSupabaseError(userError, 'Criação de usuário', 'Usuario');
+      throw handledError;
+    }
 
     return {
       user: {
@@ -72,7 +99,10 @@ export async function loginUser(email, password) {
       .eq('email', email)
       .single()
 
-    if (userError) throw userError
+    if (userError) {
+      const handledError = handleSupabaseError(userError, 'Busca de usuário', 'Usuario');
+      throw handledError;
+    }
 
     return {
       user: {
@@ -103,7 +133,10 @@ export async function getCurrentUser() {
       .eq('email', user.email)
       .single()
 
-    if (error) throw error
+    if (error) {
+      const handledError = handleSupabaseError(error, 'Busca de usuário atual', 'Usuario');
+      throw handledError;
+    }
 
     return {
       id: userData.id,
@@ -142,7 +175,10 @@ export async function getAvisos(page = 1, pageSize = 10, search = '') {
 
     const { data, count, error } = await query
 
-    if (error) throw error
+    if (error) {
+      const handledError = handleSupabaseError(error, 'Busca de avisos', 'Aviso');
+      throw handledError;
+    }
 
     return {
       data: data || [],
@@ -171,7 +207,10 @@ export async function createAviso(avisoData) {
       .select()
       .single()
 
-    if (error) throw error
+    if (error) {
+      const handledError = handleSupabaseError(error, 'Criação de aviso', 'Aviso');
+      throw handledError;
+    }
     return data
   } catch (error) {
     console.error('Erro ao criar aviso:', error)
@@ -186,7 +225,10 @@ export async function deleteAviso(id) {
       .delete()
       .eq('id', id)
 
-    if (error) throw error
+    if (error) {
+      const handledError = handleSupabaseError(error, 'Exclusão de aviso', 'Aviso');
+      throw handledError;
+    }
     return true
   } catch (error) {
     console.error('Erro ao deletar aviso:', error)
@@ -209,7 +251,10 @@ export async function getMembros(page = 1, pageSize = 10, search = '') {
 
     const { data, count, error } = await query
 
-    if (error) throw error
+    if (error) {
+      const handledError = handleSupabaseError(error, 'Busca de membros', 'Membro');
+      throw handledError;
+    }
 
     return {
       data: data || [],
@@ -238,7 +283,10 @@ export async function getMembroById(id) {
       .eq('id', id)
       .single()
 
-    if (error) throw error
+    if (error) {
+      const handledError = handleSupabaseError(error, 'Busca de membro por ID', 'Membro');
+      throw handledError;
+    }
     return data
   } catch (error) {
     console.error('Erro ao buscar membro:', error)
@@ -254,7 +302,10 @@ export async function createMembro(membroData) {
       .select()
       .single()
 
-    if (error) throw error
+    if (error) {
+      const handledError = handleSupabaseError(error, 'Criação de membro', 'Membro');
+      throw handledError;
+    }
     return data
   } catch (error) {
     console.error('Erro ao criar membro:', error)
@@ -271,7 +322,10 @@ export async function updateMembro(id, membroData) {
       .select()
       .single()
 
-    if (error) throw error
+    if (error) {
+      const handledError = handleSupabaseError(error, 'Atualização de membro', 'Membro');
+      throw handledError;
+    }
     return data
   } catch (error) {
     console.error('Erro ao atualizar membro:', error)
@@ -286,7 +340,10 @@ export async function deleteMembro(id) {
       .delete()
       .eq('id', id)
 
-    if (error) throw error
+    if (error) {
+      const handledError = handleSupabaseError(error, 'Exclusão de membro', 'Membro');
+      throw handledError;
+    }
     return true
   } catch (error) {
     console.error('Erro ao deletar membro:', error)
@@ -309,7 +366,10 @@ export async function getEventos(page = 1, pageSize = 10, search = '') {
 
     const { data, count, error } = await query
 
-    if (error) throw error
+    if (error) {
+      const handledError = handleSupabaseError(error, 'Busca de eventos', 'Evento');
+      throw handledError;
+    }
 
     return {
       data: data || [],
@@ -338,7 +398,10 @@ export async function getEventoById(id) {
       .eq('id', id)
       .single()
 
-    if (error) throw error
+    if (error) {
+      const handledError = handleSupabaseError(error, 'Busca de evento por ID', 'Evento');
+      throw handledError;
+    }
     return data
   } catch (error) {
     console.error('Erro ao buscar evento:', error)
@@ -354,7 +417,10 @@ export async function createEvento(eventoData) {
       .select()
       .single()
 
-    if (error) throw error
+    if (error) {
+      const handledError = handleSupabaseError(error, 'Criação de evento', 'Evento');
+      throw handledError;
+    }
     return data
   } catch (error) {
     console.error('Erro ao criar evento:', error)
@@ -371,7 +437,10 @@ export async function updateEvento(id, eventoData) {
       .select()
       .single()
 
-    if (error) throw error
+    if (error) {
+      const handledError = handleSupabaseError(error, 'Atualização de evento', 'Evento');
+      throw handledError;
+    }
     return data
   } catch (error) {
     console.error('Erro ao atualizar evento:', error)
@@ -386,7 +455,10 @@ export async function deleteEvento(id) {
       .delete()
       .eq('id', id)
 
-    if (error) throw error
+    if (error) {
+      const handledError = handleSupabaseError(error, 'Exclusão de evento', 'Evento');
+      throw handledError;
+    }
     return true
   } catch (error) {
     console.error('Erro ao deletar evento:', error)
@@ -402,7 +474,10 @@ export async function getDiretoria() {
       .select('*')
       .order('id', { ascending: false })
 
-    if (error) throw error
+    if (error) {
+      const handledError = handleSupabaseError(error, 'Busca de diretoria', 'Diretoria');
+      throw handledError;
+    }
     return { data: data || [] }
   } catch (error) {
     console.error('Erro ao buscar diretoria:', error)
@@ -418,7 +493,10 @@ export async function createDiretor(diretorData) {
       .select()
       .single()
 
-    if (error) throw error
+    if (error) {
+      const handledError = handleSupabaseError(error, 'Criação de diretor', 'Diretoria');
+      throw handledError;
+    }
     return data
   } catch (error) {
     console.error('Erro ao criar diretor:', error)
@@ -433,7 +511,10 @@ export async function deleteDiretor(id) {
       .delete()
       .eq('id', id)
 
-    if (error) throw error
+    if (error) {
+      const handledError = handleSupabaseError(error, 'Exclusão de diretor', 'Diretoria');
+      throw handledError;
+    }
     return true
   } catch (error) {
     console.error('Erro ao deletar diretor:', error)
@@ -456,7 +537,10 @@ export async function getFinancas(page = 1, pageSize = 20, tipo = '') {
 
     const { data, count, error } = await query
 
-    if (error) throw error
+    if (error) {
+      const handledError = handleSupabaseError(error, 'Busca de finanças', 'Financa');
+      throw handledError;
+    }
 
     return {
       data: data || [],
@@ -485,7 +569,10 @@ export async function getFinancaById(id) {
       .eq('id', id)
       .single()
 
-    if (error) throw error
+    if (error) {
+      const handledError = handleSupabaseError(error, 'Busca de finança por ID', 'Financa');
+      throw handledError;
+    }
     return data
   } catch (error) {
     console.error('Erro ao buscar finança:', error)
@@ -501,7 +588,10 @@ export async function createFinanca(financaData) {
       .select()
       .single()
 
-    if (error) throw error
+    if (error) {
+      const handledError = handleSupabaseError(error, 'Criação de finança', 'Financa');
+      throw handledError;
+    }
     return data
   } catch (error) {
     console.error('Erro ao criar finança:', error)
@@ -516,7 +606,10 @@ export async function deleteFinanca(id) {
       .delete()
       .eq('id', id)
 
-    if (error) throw error
+    if (error) {
+      const handledError = handleSupabaseError(error, 'Exclusão de finança', 'Financa');
+      throw handledError;
+    }
     return true
   } catch (error) {
     console.error('Erro ao deletar finança:', error)
@@ -531,7 +624,10 @@ export async function deleteFinancasByTipo(tipo) {
       .delete()
       .eq('tipo', tipo)
 
-    if (error) throw error
+    if (error) {
+      const handledError = handleSupabaseError(error, 'Exclusão de finanças por tipo', 'Financa');
+      throw handledError;
+    }
     return true
   } catch (error) {
     console.error('Erro ao deletar finanças por tipo:', error)
@@ -554,7 +650,10 @@ export async function getConteudos(page = 1, pageSize = 20, search = '') {
 
     const { data, count, error } = await query
 
-    if (error) throw error
+    if (error) {
+      const handledError = handleSupabaseError(error, 'Busca de conteúdos', 'Conteudo');
+      throw handledError;
+    }
 
     return {
       data: data || [],
@@ -583,7 +682,10 @@ export async function getConteudoById(id) {
       .eq('id', id)
       .single()
 
-    if (error) throw error
+    if (error) {
+      const handledError = handleSupabaseError(error, 'Busca de conteúdo por ID', 'Conteudo');
+      throw handledError;
+    }
     return data
   } catch (error) {
     console.error('Erro ao buscar conteúdo:', error)
@@ -599,7 +701,10 @@ export async function createConteudo(conteudoData) {
       .select()
       .single()
 
-    if (error) throw error
+    if (error) {
+      const handledError = handleSupabaseError(error, 'Criação de conteúdo', 'Conteudo');
+      throw handledError;
+    }
     return data
   } catch (error) {
     console.error('Erro ao criar conteúdo:', error)
@@ -616,7 +721,10 @@ export async function updateConteudo(id, conteudoData) {
       .select()
       .single()
 
-    if (error) throw error
+    if (error) {
+      const handledError = handleSupabaseError(error, 'Atualização de conteúdo', 'Conteudo');
+      throw handledError;
+    }
     return data
   } catch (error) {
     console.error('Erro ao atualizar conteúdo:', error)
@@ -631,7 +739,10 @@ export async function deleteConteudo(id) {
       .delete()
       .eq('id', id)
 
-    if (error) throw error
+    if (error) {
+      const handledError = handleSupabaseError(error, 'Exclusão de conteúdo', 'Conteudo');
+      throw handledError;
+    }
     return true
   } catch (error) {
     console.error('Erro ao deletar conteúdo:', error)
@@ -657,7 +768,10 @@ export async function getTemplates(page = '', lado = '') {
 
     const { data, error } = await query
 
-    if (error) throw error
+    if (error) {
+      const handledError = handleSupabaseError(error, 'Busca de templates', 'BadgeTemplate');
+      throw handledError;
+    }
     return data || []
   } catch (error) {
     console.error('Erro ao buscar templates:', error)
@@ -677,7 +791,10 @@ export async function createOrUpdateTemplate(templateData) {
         .select()
         .single()
 
-      if (error) throw error
+      if (error) {
+        const handledError = handleSupabaseError(error, 'Atualização de template', 'BadgeTemplate');
+        throw handledError;
+      }
       result = data
     } else {
       // Criar novo template
@@ -687,7 +804,10 @@ export async function createOrUpdateTemplate(templateData) {
         .select()
         .single()
 
-      if (error) throw error
+      if (error) {
+        const handledError = handleSupabaseError(error, 'Criação de template', 'BadgeTemplate');
+        throw handledError;
+      }
       result = data
     }
     return result
@@ -712,7 +832,10 @@ export async function getCrachas(page = 1, pageSize = 20, origem = '') {
 
     const { data, count, error } = await query
 
-    if (error) throw error
+    if (error) {
+      const handledError = handleSupabaseError(error, 'Busca de crachás', 'Cracha');
+      throw handledError;
+    }
 
     return {
       data: data || [],
@@ -741,7 +864,10 @@ export async function createCracha(crachaData) {
       .select()
       .single()
 
-    if (error) throw error
+    if (error) {
+      const handledError = handleSupabaseError(error, 'Criação de crachá', 'Cracha');
+      throw handledError;
+    }
     return data
   } catch (error) {
     console.error('Erro ao criar crachá:', error)
@@ -758,7 +884,10 @@ export async function updateCracha(id, crachaData) {
       .select()
       .single()
 
-    if (error) throw error
+    if (error) {
+      const handledError = handleSupabaseError(error, 'Atualização de crachá', 'Cracha');
+      throw handledError;
+    }
     return data
   } catch (error) {
     console.error('Erro ao atualizar crachá:', error)
@@ -773,7 +902,10 @@ export async function deleteCracha(id) {
       .delete()
       .eq('id', id)
 
-    if (error) throw error
+    if (error) {
+      const handledError = handleSupabaseError(error, 'Exclusão de crachá', 'Cracha');
+      throw handledError;
+    }
     return true
   } catch (error) {
     console.error('Erro ao deletar crachá:', error)
@@ -796,7 +928,10 @@ export async function getEmbaixadores(page = 1, pageSize = 10, search = '') {
 
     const { data, count, error } = await query
 
-    if (error) throw error
+    if (error) {
+      const handledError = handleSupabaseError(error, 'Busca de embaixadores', 'Embaixador');
+      throw handledError;
+    }
 
     return {
       data: data || [],
@@ -825,7 +960,10 @@ export async function createEmbaixador(embaixadorData) {
       .select()
       .single()
 
-    if (error) throw error
+    if (error) {
+      const handledError = handleSupabaseError(error, 'Criação de embaixador', 'Embaixador');
+      throw handledError;
+    }
     return data
   } catch (error) {
     console.error('Erro ao criar embaixador:', error)
@@ -842,7 +980,10 @@ export async function updateEmbaixador(id, embaixadorData) {
       .select()
       .single()
 
-    if (error) throw error
+    if (error) {
+      const handledError = handleSupabaseError(error, 'Atualização de embaixador', 'Embaixador');
+      throw handledError;
+    }
     return data
   } catch (error) {
     console.error('Erro ao atualizar embaixador:', error)
@@ -857,7 +998,10 @@ export async function deleteEmbaixador(id) {
       .delete()
       .eq('id', id)
 
-    if (error) throw error
+    if (error) {
+      const handledError = handleSupabaseError(error, 'Exclusão de embaixador', 'Embaixador');
+      throw handledError;
+    }
     return true
   } catch (error) {
     console.error('Erro ao deletar embaixador:', error)

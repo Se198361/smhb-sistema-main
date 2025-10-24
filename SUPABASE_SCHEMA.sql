@@ -4,7 +4,7 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- Tabela Usuario
-CREATE TABLE "Usuario" (
+CREATE TABLE IF NOT EXISTS "Usuario" (
   "id" SERIAL PRIMARY KEY,
   "email" TEXT UNIQUE NOT NULL,
   "senhaHash" TEXT NOT NULL,
@@ -14,7 +14,7 @@ CREATE TABLE "Usuario" (
 );
 
 -- Tabela Aviso
-CREATE TABLE "Aviso" (
+CREATE TABLE IF NOT EXISTS "Aviso" (
   "id" SERIAL PRIMARY KEY,
   "titulo" TEXT NOT NULL,
   "conteudo" TEXT,
@@ -26,7 +26,7 @@ CREATE TABLE "Aviso" (
 );
 
 -- Tabela Membro
-CREATE TABLE "Membro" (
+CREATE TABLE IF NOT EXISTS "Membro" (
   "id" SERIAL PRIMARY KEY,
   "nome" TEXT NOT NULL,
   "endereco" TEXT NOT NULL,
@@ -38,7 +38,7 @@ CREATE TABLE "Membro" (
 );
 
 -- Tabela Evento
-CREATE TABLE "Evento" (
+CREATE TABLE IF NOT EXISTS "Evento" (
   "id" SERIAL PRIMARY KEY,
   "titulo" TEXT NOT NULL,
   "data" TIMESTAMP WITH TIME ZONE NOT NULL,
@@ -50,7 +50,7 @@ CREATE TABLE "Evento" (
 );
 
 -- Tabela Diretoria
-CREATE TABLE "Diretoria" (
+CREATE TABLE IF NOT EXISTS "Diretoria" (
   "id" SERIAL PRIMARY KEY,
   "nome" TEXT NOT NULL,
   "cargo" TEXT NOT NULL,
@@ -60,7 +60,7 @@ CREATE TABLE "Diretoria" (
 );
 
 -- Tabela Financa
-CREATE TABLE "Financa" (
+CREATE TABLE IF NOT EXISTS "Financa" (
   "id" SERIAL PRIMARY KEY,
   "tipo" TEXT NOT NULL,
   "valor" DOUBLE PRECISION NOT NULL,
@@ -72,7 +72,7 @@ CREATE TABLE "Financa" (
 );
 
 -- Tabela Conteudo
-CREATE TABLE "Conteudo" (
+CREATE TABLE IF NOT EXISTS "Conteudo" (
   "id" SERIAL PRIMARY KEY,
   "tipo" TEXT NOT NULL,
   "titulo" TEXT NOT NULL,
@@ -82,7 +82,7 @@ CREATE TABLE "Conteudo" (
 );
 
 -- Tabela Cracha
-CREATE TABLE "Cracha" (
+CREATE TABLE IF NOT EXISTS "Cracha" (
   "id" SERIAL PRIMARY KEY,
   "nome" TEXT NOT NULL,
   "front" TEXT NOT NULL,
@@ -94,7 +94,7 @@ CREATE TABLE "Cracha" (
 );
 
 -- Tabela Embaixador
-CREATE TABLE "Embaixador" (
+CREATE TABLE IF NOT EXISTS "Embaixador" (
   "id" SERIAL PRIMARY KEY,
   "nome" TEXT NOT NULL,
   "idade" INTEGER,
@@ -109,7 +109,7 @@ CREATE TABLE "Embaixador" (
 );
 
 -- Tabela BadgeTemplate
-CREATE TABLE "BadgeTemplate" (
+CREATE TABLE IF NOT EXISTS "BadgeTemplate" (
   "id" SERIAL PRIMARY KEY,
   "page" TEXT NOT NULL,
   "lado" TEXT NOT NULL,
@@ -120,29 +120,32 @@ CREATE TABLE "BadgeTemplate" (
 );
 
 -- Adicionar chaves estrangeiras
+ALTER TABLE "Cracha" DROP CONSTRAINT IF EXISTS "Cracha_embaixadorId_fkey";
 ALTER TABLE "Cracha" ADD CONSTRAINT "Cracha_embaixadorId_fkey" 
   FOREIGN KEY ("embaixadorId") REFERENCES "Embaixador"("id") 
   ON DELETE SET NULL;
 
+ALTER TABLE "Embaixador" DROP CONSTRAINT IF EXISTS "Embaixador_templateFrontId_fkey";
 ALTER TABLE "Embaixador" ADD CONSTRAINT "Embaixador_templateFrontId_fkey" 
   FOREIGN KEY ("templateFrontId") REFERENCES "BadgeTemplate"("id") 
   ON DELETE SET NULL;
 
+ALTER TABLE "Embaixador" DROP CONSTRAINT IF EXISTS "Embaixador_templateBackId_fkey";
 ALTER TABLE "Embaixador" ADD CONSTRAINT "Embaixador_templateBackId_fkey" 
   FOREIGN KEY ("templateBackId") REFERENCES "BadgeTemplate"("id") 
   ON DELETE SET NULL;
 
 -- Criar índices para melhorar performance
-CREATE INDEX "Usuario_email_idx" ON "Usuario"("email");
-CREATE INDEX "Aviso_createdAt_idx" ON "Aviso"("createdAt");
-CREATE INDEX "Membro_nome_idx" ON "Membro"("nome");
-CREATE INDEX "Evento_data_idx" ON "Evento"("data");
-CREATE INDEX "Financa_data_idx" ON "Financa"("data");
-CREATE INDEX "Financa_tipo_idx" ON "Financa"("tipo");
-CREATE INDEX "Conteudo_data_idx" ON "Conteudo"("data");
-CREATE INDEX "Cracha_origem_idx" ON "Cracha"("origem");
-CREATE INDEX "Embaixador_nome_idx" ON "Embaixador"("nome");
-CREATE INDEX "BadgeTemplate_page_lado_idx" ON "BadgeTemplate"("page", "lado");
+CREATE INDEX IF NOT EXISTS "Usuario_email_idx" ON "Usuario"("email");
+CREATE INDEX IF NOT EXISTS "Aviso_createdAt_idx" ON "Aviso"("createdAt");
+CREATE INDEX IF NOT EXISTS "Membro_nome_idx" ON "Membro"("nome");
+CREATE INDEX IF NOT EXISTS "Evento_data_idx" ON "Evento"("data");
+CREATE INDEX IF NOT EXISTS "Financa_data_idx" ON "Financa"("data");
+CREATE INDEX IF NOT EXISTS "Financa_tipo_idx" ON "Financa"("tipo");
+CREATE INDEX IF NOT EXISTS "Conteudo_data_idx" ON "Conteudo"("data");
+CREATE INDEX IF NOT EXISTS "Cracha_origem_idx" ON "Cracha"("origem");
+CREATE INDEX IF NOT EXISTS "Embaixador_nome_idx" ON "Embaixador"("nome");
+CREATE INDEX IF NOT EXISTS "BadgeTemplate_page_lado_idx" ON "BadgeTemplate"("page", "lado");
 
 -- Configurar Row Level Security (RLS)
 ALTER TABLE "Usuario" ENABLE ROW LEVEL SECURITY;
@@ -157,26 +160,26 @@ ALTER TABLE "Embaixador" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "BadgeTemplate" ENABLE ROW LEVEL SECURITY;
 
 -- Políticas básicas (podem ser ajustadas conforme necessário)
-CREATE POLICY "Todos podem visualizar avisos" ON "Aviso" 
+CREATE POLICY IF NOT EXISTS "Todos podem visualizar avisos" ON "Aviso" 
   FOR SELECT USING (true);
 
-CREATE POLICY "Todos podem visualizar diretoria" ON "Diretoria" 
+CREATE POLICY IF NOT EXISTS "Todos podem visualizar diretoria" ON "Diretoria" 
   FOR SELECT USING (true);
 
-CREATE POLICY "Todos podem visualizar templates" ON "BadgeTemplate" 
+CREATE POLICY IF NOT EXISTS "Todos podem visualizar templates" ON "BadgeTemplate" 
   FOR SELECT USING (true);
 
 -- Políticas para usuários autenticados (exemplo - ajustar conforme necessário)
-CREATE POLICY "Usuários autenticados podem inserir membros" ON "Membro" 
+CREATE POLICY IF NOT EXISTS "Usuários autenticados podem inserir membros" ON "Membro" 
   FOR INSERT WITH CHECK (auth.role() = 'authenticated');
 
-CREATE POLICY "Usuários autenticados podem visualizar membros" ON "Membro" 
+CREATE POLICY IF NOT EXISTS "Usuários autenticados podem visualizar membros" ON "Membro" 
   FOR SELECT USING (auth.role() = 'authenticated');
 
-CREATE POLICY "Usuários autenticados podem atualizar membros" ON "Membro" 
+CREATE POLICY IF NOT EXISTS "Usuários autenticados podem atualizar membros" ON "Membro" 
   FOR UPDATE USING (auth.role() = 'authenticated');
 
-CREATE POLICY "Usuários autenticados podem deletar membros" ON "Membro" 
+CREATE POLICY IF NOT EXISTS "Usuários autenticados podem deletar membros" ON "Membro" 
   FOR DELETE USING (auth.role() = 'authenticated');
 
 -- Funções e gatilhos para atualizar timestamps
@@ -189,42 +192,52 @@ END;
 $$ language 'plpgsql';
 
 -- Gatilhos para atualizar timestamps
+DROP TRIGGER IF EXISTS update_usuario_updated_at ON "Usuario";
 CREATE TRIGGER update_usuario_updated_at 
   BEFORE UPDATE ON "Usuario" 
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_aviso_updated_at ON "Aviso";
 CREATE TRIGGER update_aviso_updated_at 
   BEFORE UPDATE ON "Aviso" 
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_membro_updated_at ON "Membro";
 CREATE TRIGGER update_membro_updated_at 
   BEFORE UPDATE ON "Membro" 
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_evento_updated_at ON "Evento";
 CREATE TRIGGER update_evento_updated_at 
   BEFORE UPDATE ON "Evento" 
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_diretoria_updated_at ON "Diretoria";
 CREATE TRIGGER update_diretoria_updated_at 
   BEFORE UPDATE ON "Diretoria" 
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_financa_updated_at ON "Financa";
 CREATE TRIGGER update_financa_updated_at 
   BEFORE UPDATE ON "Financa" 
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_conteudo_updated_at ON "Conteudo";
 CREATE TRIGGER update_conteudo_updated_at 
   BEFORE UPDATE ON "Conteudo" 
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_cracha_updated_at ON "Cracha";
 CREATE TRIGGER update_cracha_updated_at 
   BEFORE UPDATE ON "Cracha" 
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_embaixador_updated_at ON "Embaixador";
 CREATE TRIGGER update_embaixador_updated_at 
   BEFORE UPDATE ON "Embaixador" 
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_badge_template_updated_at ON "BadgeTemplate";
 CREATE TRIGGER update_badge_template_updated_at 
   BEFORE UPDATE ON "BadgeTemplate" 
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();

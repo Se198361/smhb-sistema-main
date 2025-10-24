@@ -7,7 +7,17 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 let supabase
 
 if (typeof supabaseUrl === 'string' && supabaseUrl && typeof supabaseAnonKey === 'string' && supabaseAnonKey) {
-  supabase = createClient(supabaseUrl, supabaseAnonKey)
+  // Configurar o cliente Supabase com schema explícito 'public' e parâmetros adicionais de autenticação
+  supabase = createClient(supabaseUrl, supabaseAnonKey, {
+    db: {
+      schema: 'public'
+    },
+    auth: {
+      autoRefreshToken: true,
+      persistSession: true,
+      detectSessionInUrl: true
+    }
+  })
 } else {
   if (import.meta.env.VITE_DEBUG_LOGS === 'true') console.warn('Supabase: variáveis de ambiente ausentes. Usando cliente mock para evitar falhas.')
   const mockAuth = {
