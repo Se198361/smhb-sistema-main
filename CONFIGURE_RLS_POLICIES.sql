@@ -13,24 +13,23 @@ ALTER TABLE "Embaixador" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "BadgeTemplate" ENABLE ROW LEVEL SECURITY;
 
 -- Remover políticas existentes (se houver)
-DROP POLICY IF EXISTS "Todos podem visualizar avisos" ON "Aviso";
-DROP POLICY IF EXISTS "Todos podem visualizar diretoria" ON "Diretoria";
-DROP POLICY IF EXISTS "Todos podem visualizar templates" ON "BadgeTemplate";
-DROP POLICY IF EXISTS "Usuários autenticados podem inserir membros" ON "Membro";
-DROP POLICY IF EXISTS "Usuários autenticados podem visualizar membros" ON "Membro";
-DROP POLICY IF EXISTS "Usuários autenticados podem atualizar membros" ON "Membro";
-DROP POLICY IF EXISTS "Usuários autenticados podem deletar membros" ON "Membro";
 DROP POLICY IF EXISTS "Usuários podem visualizar seus próprios dados" ON "Usuario";
 DROP POLICY IF EXISTS "Usuários podem inserir seus próprios dados" ON "Usuario";
 DROP POLICY IF EXISTS "Usuários podem atualizar seus próprios dados" ON "Usuario";
 DROP POLICY IF EXISTS "Usuários podem deletar seus próprios dados" ON "Usuario";
+DROP POLICY IF EXISTS "Todos podem visualizar avisos" ON "Aviso";
 DROP POLICY IF EXISTS "Usuários autenticados podem inserir avisos" ON "Aviso";
 DROP POLICY IF EXISTS "Usuários autenticados podem atualizar avisos" ON "Aviso";
 DROP POLICY IF EXISTS "Usuários autenticados podem deletar avisos" ON "Aviso";
+DROP POLICY IF EXISTS "Usuários autenticados podem visualizar membros" ON "Membro";
+DROP POLICY IF EXISTS "Usuários autenticados podem inserir membros" ON "Membro";
+DROP POLICY IF EXISTS "Usuários autenticados podem atualizar membros" ON "Membro";
+DROP POLICY IF EXISTS "Usuários autenticados podem deletar membros" ON "Membro";
 DROP POLICY IF EXISTS "Usuários autenticados podem visualizar eventos" ON "Evento";
 DROP POLICY IF EXISTS "Usuários autenticados podem inserir eventos" ON "Evento";
 DROP POLICY IF EXISTS "Usuários autenticados podem atualizar eventos" ON "Evento";
 DROP POLICY IF EXISTS "Usuários autenticados podem deletar eventos" ON "Evento";
+DROP POLICY IF EXISTS "Todos podem visualizar diretoria" ON "Diretoria";
 DROP POLICY IF EXISTS "Usuários autenticados podem inserir diretores" ON "Diretoria";
 DROP POLICY IF EXISTS "Usuários autenticados podem atualizar diretores" ON "Diretoria";
 DROP POLICY IF EXISTS "Usuários autenticados podem deletar diretores" ON "Diretoria";
@@ -50,22 +49,23 @@ DROP POLICY IF EXISTS "Usuários autenticados podem visualizar embaixadores" ON 
 DROP POLICY IF EXISTS "Usuários autenticados podem inserir embaixadores" ON "Embaixador";
 DROP POLICY IF EXISTS "Usuários autenticados podem atualizar embaixadores" ON "Embaixador";
 DROP POLICY IF EXISTS "Usuários autenticados podem deletar embaixadores" ON "Embaixador";
+DROP POLICY IF EXISTS "Todos podem visualizar templates" ON "BadgeTemplate";
 DROP POLICY IF EXISTS "Usuários autenticados podem inserir templates" ON "BadgeTemplate";
 DROP POLICY IF EXISTS "Usuários autenticados podem atualizar templates" ON "BadgeTemplate";
 DROP POLICY IF EXISTS "Usuários autenticados podem deletar templates" ON "BadgeTemplate";
 
 -- Políticas para tabela Usuario
 CREATE POLICY "Usuários podem visualizar seus próprios dados" ON "Usuario"
-  FOR SELECT USING (auth.uid() = id);
+  FOR SELECT USING (auth.uid()::text = "id"::text);
 
 CREATE POLICY "Usuários podem inserir seus próprios dados" ON "Usuario"
   FOR INSERT WITH CHECK (auth.role() = 'authenticated');
 
 CREATE POLICY "Usuários podem atualizar seus próprios dados" ON "Usuario"
-  FOR UPDATE USING (auth.uid() = id);
+  FOR UPDATE USING (auth.uid()::text = "id"::text);
 
 CREATE POLICY "Usuários podem deletar seus próprios dados" ON "Usuario"
-  FOR DELETE USING (auth.uid() = id);
+  FOR DELETE USING (auth.uid()::text = "id"::text);
 
 -- Políticas para tabela Aviso (acesso público para leitura)
 CREATE POLICY "Todos podem visualizar avisos" ON "Aviso"

@@ -104,6 +104,13 @@ Este erro ocorre quando se tenta usar `IF NOT EXISTS` com `CREATE POLICY`. Para 
 1. Use o script [CONFIGURE_RLS_POLICIES.sql](file:///c:/Users/sergi/Downloads/smhb-sistema-main/smhb-sistema-main/CONFIGURE_RLS_POLICIES.sql) corrigido, que usa `DROP POLICY IF EXISTS` antes de criar as políticas
 2. Execute o script no "SQL Editor" do Supabase
 
+### Erro de Tipo (ERROR: 42883: operator does not exist: uuid = integer)
+
+Este erro ocorre devido a incompatibilidade de tipos entre `auth.uid()` (UUID) e o campo `id` (inteiro) nas políticas RLS. Para resolver:
+
+1. Use o script [CONFIGURE_RLS_POLICIES.sql](file:///c:/Users/sergi/Downloads/smhb-sistema-main/smhb-sistema-main/CONFIGURE_RLS_POLICIES.sql) corrigido, que faz a conversão de tipos adequada usando `::text`
+2. Execute o script no "SQL Editor" do Supabase
+
 ### Problemas com Autenticação
 
 Se tiver problemas com autenticação:
