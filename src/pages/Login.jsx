@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useAuth } from '../context/authContext'
-import { postJson } from '../lib/api'
 import { useNavigate } from 'react-router-dom'
+import { supabase } from '../lib/supabase'
 
 export default function Login() {
   const [email, setEmail] = useState('')
@@ -19,28 +19,33 @@ export default function Login() {
       await login(email, password)
       navigate('/dashboard')
     } catch (err) {
-      setError(err?.message || 'Falha ao entrar')
+      const msg = err?.message || 'Falha ao entrar'
+      if (msg.toLowerCase().includes('email not confirmed')) {
+        setError('Seu e-mail não está confirmado. Reenvie a confirmação ou confirme pelo link enviado.')
+      } else {
+        setError(msg)
+      }
     } finally {
       setLoading(false)
     }
   }
 
-  async function handleResetPassword() {
+  async function handleResendConfirmation() {
     setError('')
     if (!email) {
-      setError('Informe seu e-mail para recuperar a senha.')
+      setError('Informe seu e-mail para reenviar a confirmação.')
       return
     }
     try {
-      const res = await postJson('/api/auth/reset/request', { email })
-      if (res?.devResetLink) {
-        // modo dev: redireciona diretamente para página de redefinição
-        window.location.href = res.devResetLink
-      } else {
-        alert('Se o e-mail existir, enviamos um link para redefinir a senha.')
-      }
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email,
+        options: { emailRedirectTo: window.location.origin + '/login' }
+      })
+      if (error) throw error
+      alert('Se o e-mail existir, reenviamos o link de confirmação.')
     } catch (err) {
-      setError(err?.message || 'Falha ao solicitar redefinição')
+      setError(err?.message || 'Falha ao reenviar confirmação')
     }
   }
 
@@ -60,9 +65,10 @@ export default function Login() {
         <button disabled={loading} className="w-full btn-neon">
           {loading ? 'Entrando...' : 'Entrar'}
         </button>
-        <div className="text-right">
-          <button type="button" onClick={handleResetPassword} className="text-sm soft-link">Esqueci minha senha</button>
-      </div>
+        <div className="flex justify-between text-sm mt-2">
+          <button type="button" onClick={handleResendConfirmation} className="soft-link">Reenviar confirmação</button>
+          <a href="/cadastro" className="soft-link">Criar conta</a>
+        </div>
       </form>
     </div>
   )

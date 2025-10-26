@@ -22,60 +22,26 @@ function handleSupabaseError(error, operation, table = '') {
 // Funções de autenticação
 export async function registerUser(nome, email, password) {
   try {
-    // Verificar se o email já existe
-    const { data: existingUser, error: existingUserError } = await supabase
-      .from('Usuario')
-      .select('id')
-      .eq('email', email)
-      .single()
-
-    if (existingUserError && existingUserError.code !== 'PGRST116') {
-      const handledError = handleSupabaseError(existingUserError, 'Verificação de email existente', 'Usuario');
-      throw handledError;
-    }
-
-    if (existingUser && !existingUserError) {
-      throw new Error('Email já cadastrado')
-    }
-
-    // Criar usuário no Supabase Auth
+    // Criar usuário no Supabase Auth (sem criar registro em Usuario ainda)
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        data: {
-          nome
-        }
+        emailRedirectTo: window.location.origin + '/login',
+        data: { nome }
       }
     })
 
-    if (authError) throw authError
-
-    // Criar registro na tabela Usuario
-    const { data: userData, error: userError } = await supabase
-      .from('Usuario')
-      .insert([
-        {
-          email,
-          nome,
-          senhaHash: authData.user.id // Usar o ID do usuário como senhaHash temporário
-        }
-      ])
-      .select()
-      .single()
-
-    if (userError) {
-      const handledError = handleSupabaseError(userError, 'Criação de usuário', 'Usuario');
-      throw handledError;
-    }
-
-    return {
-      user: {
-        id: userData.id,
-        email: userData.email,
-        nome: userData.nome
+    if (authError) {
+      // Mensagem amigável quando e-mail já existe no Auth
+      if (authError.message && authError.message.toLowerCase().includes('already registered')) {
+        throw new Error('E-mail já cadastrado. Vá para Login e use “Reenviar confirmação”.')
       }
+      throw authError
     }
+
+    // Não criar Usuario aqui; aguardamos confirmação e primeiro login
+    return { status: 'pending_email_confirmation', user: null }
   } catch (error) {
     console.error('Erro no registro:', error)
     throw error
@@ -92,7 +58,10 @@ export async function loginUser(email, password) {
 
     if (error) throw error
 
-    // Buscar dados do usuário na tabela Usuario
+    const authUser = data.user
+
+    // Buscar ou criar dados do usuário na tabela Usuario após login (confirmado)
+    let usuario
     const { data: userData, error: userError } = await supabase
       .from('Usuario')
       .select('id, email, nome')
@@ -100,15 +69,32 @@ export async function loginUser(email, password) {
       .single()
 
     if (userError) {
-      const handledError = handleSupabaseError(userError, 'Busca de usuário', 'Usuario');
-      throw handledError;
+      // Se não encontrado, criar registro
+      if (userError.code === 'PGRST116') {
+        const nome = authUser?.user_metadata?.nome || ''
+        const { data: created, error: createError } = await supabase
+          .from('Usuario')
+          .insert([{ email, nome, senhaHash: authUser.id }])
+          .select('id, email, nome')
+          .single()
+        if (createError) {
+          const handledError = handleSupabaseError(createError, 'Criação de usuário após login', 'Usuario');
+          throw handledError;
+        }
+        usuario = created
+      } else {
+        const handledError = handleSupabaseError(userError, 'Busca de usuário', 'Usuario');
+        throw handledError;
+      }
+    } else {
+      usuario = userData
     }
 
     return {
       user: {
-        id: userData.id,
-        email: userData.email,
-        nome: userData.nome
+        id: usuario.id,
+        email: usuario.email,
+        nome: usuario.nome
       },
       session: data.session
     }

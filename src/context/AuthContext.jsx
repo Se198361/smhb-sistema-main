@@ -65,8 +65,8 @@ export function AuthProvider({ children }) {
   async function register(nome, email, password) {
     try {
       const result = await registerUser(nome, email, password)
-      setUser(result.user)
-      return result.user
+      // Não autenticar aqui; aguardamos confirmação e primeiro login
+      return result
     } catch (error) {
       throw error
     }

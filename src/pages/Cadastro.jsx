@@ -7,6 +7,7 @@ export default function Cadastro() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const [info, setInfo] = useState('')
   const [loading, setLoading] = useState(false)
   const { register } = useAuth()
   const navigate = useNavigate()
@@ -14,12 +15,22 @@ export default function Cadastro() {
   async function handleSubmit(e) {
     e.preventDefault()
     setError('')
+    setInfo('')
     setLoading(true)
     try {
-      await register(name, email, password)
-      navigate('/dashboard')
+      const result = await register(name, email, password)
+      // Orientar usuário a confirmar e usar Login
+      setInfo('Cadastro iniciado. Enviamos a confirmação para seu e-mail. Após confirmar, acesse Login. Você também pode usar "Reenviar confirmação".')
+      // Redirecionar para página de confirmação enviada
+      navigate('/confirmacao-enviada')
     } catch (err) {
-      setError(err?.message || 'Falha ao cadastrar')
+      const msg = err?.message || 'Falha ao cadastrar'
+      // Mensagem amigável quando e-mail já existe
+      if (msg.toLowerCase().includes('e-mail já cadastrado') || msg.toLowerCase().includes('already registered')) {
+        setError('E-mail já cadastrado. Vá para Login e use "Reenviar confirmação".')
+      } else {
+        setError(msg)
+      }
     } finally {
       setLoading(false)
     }
@@ -42,6 +53,7 @@ export default function Cadastro() {
           <input type="password" value={password} onChange={e => setPassword(e.target.value)} required className="w-full" />
         </div>
         {error && <p className="text-red-600 dark:text-red-400 text-sm">{error}</p>}
+        {info && <p className="text-blue-600 dark:text-blue-400 text-sm">{info}</p>}
         <button disabled={loading} className="w-full btn-neon">
           {loading ? 'Cadastrando...' : 'Cadastrar'}
         </button>

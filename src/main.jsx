@@ -17,7 +17,7 @@ import Avisos from './pages/Avisos.jsx'
 import Crachas from './pages/Crachas.jsx'
 import RedefinirSenha from './pages/RedefinirSenha.jsx'
 import Embaixadores from './pages/Embaixadores.jsx'
-import Diagnostico from './pages/Diagnostico.jsx'
+import ConfirmacaoEnviada from './pages/ConfirmacaoEnviada.jsx'
 
 // Normalize URLs with hash (/#/login) to path (/login)
 if (typeof window !== 'undefined' && window.location.hash && window.location.hash.startsWith('#/')) {
@@ -79,6 +79,7 @@ createRoot(document.getElementById('root')).render(
               <Route path="/login" element={<Login />} />
               <Route path="/redefinir-senha" element={<RedefinirSenha />} />
               <Route path="/cadastro" element={<Cadastro />} />
+              <Route path="/confirmacao-enviada" element={<ConfirmacaoEnviada />} />
               <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
               <Route path="/membros" element={<PrivateRoute><Membros /></PrivateRoute>} />
               <Route path="/diretoria" element={<PrivateRoute><Celulas /></PrivateRoute>} />
@@ -88,7 +89,6 @@ createRoot(document.getElementById('root')).render(
               <Route path="/avisos" element={<PrivateRoute><Avisos /></PrivateRoute>} />
               <Route path="/crachas" element={<PrivateRoute><Crachas /></PrivateRoute>} />
               <Route path="/embaixadores" element={<PrivateRoute><Embaixadores /></PrivateRoute>} />
-              <Route path="/diagnostico" element={<PrivateRoute><Diagnostico /></PrivateRoute>} />
             </Route>
           </Routes>
         </BrowserRouter>
