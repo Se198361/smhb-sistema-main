@@ -23,6 +23,31 @@ export default function Membros() {
     return false
   }
 
+  // Converter valor recebido (Date ou ISO) para o formato do input date (YYYY-MM-DD)
+  function toDateInputValue(value) {
+    if (!value) return ''
+    if (typeof value === 'string') {
+      const datePart = value.split('T')[0]
+      if (datePart && /^\d{4}-\d{2}-\d{2}/.test(datePart)) return datePart
+      const d = new Date(value)
+      if (!Number.isNaN(d.getTime())) {
+        const y = d.getFullYear()
+        const m = String(d.getMonth() + 1).padStart(2, '0')
+        const dd = String(d.getDate()).padStart(2, '0')
+        return `${y}-${m}-${dd}`
+      }
+      return ''
+    }
+    const d = new Date(value)
+    if (!Number.isNaN(d.getTime())) {
+      const y = d.getFullYear()
+      const m = String(d.getMonth() + 1).padStart(2, '0')
+      const dd = String(d.getDate()).padStart(2, '0')
+      return `${y}-${m}-${dd}`
+    }
+    return ''
+  }
+
   function handleFotoChange(e) {
     const file = e.target.files?.[0]
     if (!file) return
@@ -60,10 +85,35 @@ export default function Membros() {
       alert('Informe nome, endereço e telefone do membro.')
       return
     }
+    
+    // Adicionar log de debug para a data de aniversário
+    if (import.meta.env.VITE_DEBUG_LOGS === 'true') {
+      console.log('Debug - Data de aniversário:', {
+        aniversario,
+        tipo: typeof aniversario,
+        comprimento: aniversario?.length,
+        formatoValido: aniversario && typeof aniversario === 'string' && aniversario.match(/^\d{4}-\d{2}-\d{2}/)
+      });
+    }
+    
+    // Verificar e formatar a data de aniversário se necessário
+    let formattedAniversario = aniversario;
+    if (aniversario && typeof aniversario === 'string' && aniversario.match(/^\d{4}-\d{2}-\d{2}/)) {
+      // A data já está no formato correto (YYYY-MM-DD)
+      formattedAniversario = aniversario;
+    }
+    // Se estiver vazio, enviar null para evitar erro de tipo
+    const payloadAniversario = formattedAniversario && formattedAniversario.length >= 10 ? formattedAniversario : null
+    
+    // Log dos dados que serão enviados
+    if (import.meta.env.VITE_DEBUG_LOGS === 'true') {
+      console.log('Dados a serem enviados:', { nome, endereco, telefone, aniversario: payloadAniversario, foto });
+    }
+    
     try {
       // Atualização de membro existente
       if (editingId !== null) {
-        const updated = { nome, endereco, telefone, aniversario, foto }
+        const updated = { nome, endereco, telefone, aniversario: payloadAniversario, foto }
         const row = await putJson(`/api/membros/${editingId}`, updated)
         const next = members.map(m => m.id === editingId ? row : m)
         setMembers(next)
@@ -78,7 +128,7 @@ export default function Membros() {
       }
 
       // Inserção de novo membro
-      const created = await postJson('/api/membros', { nome, endereco, telefone, aniversario, foto })
+      const created = await postJson('/api/membros', { nome, endereco, telefone, aniversario: payloadAniversario, foto })
       setMembers(prev => [created, ...prev])
       setNome('')
       setEndereco('')
@@ -95,11 +145,25 @@ export default function Membros() {
   const filtered = members.filter(m => m.nome.toLowerCase().includes(query.toLowerCase()))
 
   function startEdit(m) {
+    // Adicionar log de debug para verificar os dados carregados
+    if (import.meta.env.VITE_DEBUG_LOGS === 'true') {
+      console.log('Debug - Carregando membro para edição:', {
+        id: m.id,
+        nome: m.nome,
+        endereco: m.endereco,
+        telefone: m.telefone,
+        aniversario: m.aniversario,
+        foto: m.foto,
+        tipoAniversario: typeof m.aniversario
+      });
+    }
+    
     setEditingId(m.id ?? null)
     setNome(m.nome ?? '')
     setEndereco(m.endereco ?? m.grupo ?? '')
     setTelefone(m.telefone ?? '')
-    setAniversario(m.aniversario ?? '')
+    // Garantir que o input date receba YYYY-MM-DD
+    setAniversario(toDateInputValue(m.aniversario))
     setFoto(m.foto ?? '')
     setShowForm(true)
   }
@@ -122,11 +186,25 @@ export default function Membros() {
   }
   function formatBR(iso) {
     if (!iso) return ''
+    
+    // Se for uma string no formato YYYY-MM-DD (com ou sem hora), parsear diretamente
+    if (typeof iso === 'string') {
+      // Extrair apenas a parte da data (YYYY-MM-DD)
+      const datePart = iso.split('T')[0];
+      if (datePart && datePart.match(/^\d{4}-\d{2}-\d{2}/)) {
+        const [y, m, day] = datePart.split('-')
+        if (y && m && day) {
+          return `${String(day).padStart(2, '0')}/${String(m).padStart(2, '0')}/${y}`
+        }
+      }
+    }
+    
+    // Para outros formatos, usar o objeto Date
     const d = new Date(iso)
     if (Number.isNaN(d.getTime())) {
-      const [y, m, day] = String(iso).split('-')
-      return `${day?.padStart(2, '0')}/${m?.padStart(2, '0')}/${y}`
+      return iso
     }
+    
     const dd = String(d.getDate()).padStart(2, '0')
     const mm = String(d.getMonth() + 1).padStart(2, '0')
     const yyyy = d.getFullYear()

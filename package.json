@@ -12,7 +12,7 @@
     "url": "https://github.com/Se198361/smhb-sistema.git"
   },
   "scripts": {
-    "dev": "vite --port 5174",
+    "dev": "vite --port 5175 --host",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"

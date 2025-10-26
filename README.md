@@ -66,14 +66,14 @@ O sistema utiliza as seguintes tabelas no Supabase:
 
 ## Configuração Completa do Supabase
 
-Para configurar completamente o Supabase, siga o guia detalhado em [SUPABASE_SETUP_GUIDE.md](file:///c:/Users/sergi/Downloads/smhb-sistema-main/smhb-sistema-main/SUPABASE_SETUP_GUIDE.md).
+Para configurar completamente o Supabase, siga o guia detalhado em [SUPABASE_SETUP_GUIDE.md](SUPABASE_SETUP_GUIDE.md).
 
 ### Resumo dos Passos:
 
-1. **Criar as Tabelas**: Execute o script [SUPABASE_SCHEMA.sql](file:///c:/Users/sergi/Downloads/smhb-sistema-main/smhb-sistema-main/SUPABASE_SCHEMA.sql) no SQL Editor do Supabase
-2. **Configurar Políticas de Segurança**: Execute o script [CONFIGURE_RLS_POLICIES.sql](file:///c:/Users/sergi/Downloads/smhb-sistema-main/smhb-sistema-main/CONFIGURE_RLS_POLICIES.sql)
-3. **Verificar Estrutura**: Use o script [VERIFY_TABLES.sql](file:///c:/Users/sergi/Downloads/smhb-sistema-main/smhb-sistema-main/VERIFY_TABLES.sql) para verificar as tabelas
-4. **Testar o Sistema**: Use os scripts [INSERT_TEST_DATA.sql](file:///c:/Users/sergi/Downloads/smhb-sistema-main/smhb-sistema-main/INSERT_TEST_DATA.sql) e [TEST_CRUD_OPERATIONS.sql](file:///c:/Users/sergi/Downloads/smhb-sistema-main/smhb-sistema-main/TEST_CRUD_OPERATIONS.sql) para testar
+1. **Criar as Tabelas**: Execute o script [SUPABASE_SCHEMA.sql](SUPABASE_SCHEMA.sql) no SQL Editor do Supabase
+2. **Configurar Políticas de Segurança**: Execute o script [CONFIGURE_RLS_POLICIES.sql](CONFIGURE_RLS_POLICIES.sql)
+3. **Verificar Estrutura**: Use o script [VERIFY_TABLES.sql](VERIFY_TABLES.sql) para verificar as tabelas
+4. **Testar o Sistema**: Use os scripts [INSERT_TEST_DATA.sql](INSERT_TEST_DATA.sql) e [TEST_CRUD_OPERATIONS.sql](TEST_CRUD_OPERATIONS.sql) para testar
 
 ## Deploy
 
@@ -117,8 +117,8 @@ Este projeto foi migrado de uma arquitetura com backend Express para utilizar to
 4. **API**: Atualizada para usar o cliente Supabase diretamente
 
 Os arquivos de migração estão disponíveis em:
-- [SUPABASE_SCHEMA.sql](file:///c:/Users/sergi/Downloads/smhb-sistema-main/smhb-sistema-main/SUPABASE_SCHEMA.sql) - Schema do banco de dados
-- [SUPABASE_FUNCTIONS.sql](file:///c:/Users/sergi/Downloads/smhb-sistema-main/smhb-sistema-main/SUPABASE_FUNCTIONS.sql) - Funções SQL personalizadas
+- [SUPABASE_SCHEMA.sql](SUPABASE_SCHEMA.sql) - Schema do banco de dados
+- [SUPABASE_FUNCTIONS.sql](SUPABASE_FUNCTIONS.sql) - Funções SQL personalizadas
 
 ## Solução de Problemas
 
@@ -134,7 +134,7 @@ Este erro ocorre quando o cliente Supabase não consegue encontrar a tabela no c
 2. **Execute o script de criação de tabelas**:
    - Acesse o dashboard do Supabase
    - Vá para "SQL Editor"
-   - Cole e execute o conteúdo do arquivo [SUPABASE_SCHEMA.sql](file:///c:/Users/sergi/Downloads/smhb-sistema-main/smhb-sistema-main/SUPABASE_SCHEMA.sql)
+   - Cole e execute o conteúdo do arquivo [SUPABASE_SCHEMA.sql](SUPABASE_SCHEMA.sql)
 
 3. **Atualize o cache de schema**:
    - Reinicie o servidor de desenvolvimento (`npm run dev`)
@@ -151,3 +151,61 @@ Este erro ocorre quando o cliente Supabase não consegue encontrar a tabela no c
      - Se a conexão está funcionando
 
 Se o problema persistir, verifique os logs do console para obter mais detalhes sobre o erro.
+
+### Problema com Data de Aniversário
+
+#### Problema Identificado
+- A data de aniversário precisa estar na ordem: dia, mês, ano
+- Na Dashboard em Aniversariantes, precisa mostrar a data cadastrada em membros
+
+#### Solução Implementada
+Foram implementadas melhorias nas funções de formatação e tratamento de datas:
+
+1. **Melhoria na função formatBR**: Agora trata corretamente datas em formato string (YYYY-MM-DD) e objetos Date
+2. **Melhoria na função nextBirthdayDate**: Melhor tratamento de diferentes formatos de data
+3. **Garantia de formato correto ao salvar**: Verificação do formato da data antes de salvar
+
+Para mais detalhes, consulte o documento [SOLUCAO_DATA_ANIVERSARIO.md](SOLUCAO_DATA_ANIVERSARIO.md).
+
+Se o problema persistir:
+1. Verifique se há dados inconsistentes no banco de dados
+2. Execute os scripts de diagnóstico para identificar o formato exato das datas armazenadas
+3. Limpe e reinsira os dados de teste para verificar se o problema foi resolvido
+
+### Problema com Exibição de Aniversariantes
+
+#### Problema Identificado
+- Ao trocar a Data de aniversário em membros, não estava aparecendo corretamente em Aniversariantes na página Dashboard
+
+#### Solução Implementada
+Correção na exibição da data na seção "Aniversariantes" da Dashboard:
+
+1. **Correção da exibição**: Agora mostra a data original de aniversário do membro em vez da data calculada
+2. **Manutenção da funcionalidade**: A data calculada ainda é usada internamente para ordenar os aniversariantes
+
+Para mais detalhes, consulte o documento [CORRECAO_ANIVERSARIANTES.md](CORRECAO_ANIVERSARIANTES.md).
+
+### Problema com Salvamento de Data de Aniversário
+
+#### Problema Identificado
+- Ao preencher a data de aniversário, ela não está sendo salva no cadastro na página de membros
+
+#### Diagnóstico Realizado
+Analisamos o fluxo completo de salvamento:
+
+1. **Frontend**: O input `type="date"` retorna datas no formato "YYYY-MM-DD" corretamente
+2. **Estado React**: O estado [aniversario](file://c:\Users\sergi\Downloads\smhb-sistema-main\smhb-sistema-main\src\pages\Membros.jsx#L13-L13) está sendo atualizado corretamente
+3. **Envio para Backend**: Os dados estão sendo enviados corretamente para a API
+4. **Banco de Dados**: A coluna "aniversario" é do tipo `TIMESTAMP WITH TIME ZONE` e aceita o formato enviado
+
+#### Possíveis Causas
+1. **Permissões de acesso**: As políticas RLS podem estar impedindo a inserção/atualização
+2. **Erros silenciosos**: Pode haver erros que não estão sendo exibidos ao usuário
+3. **Problemas de validação**: Validações no backend podem estar falhando
+
+#### Soluções Propostas
+1. **Adição de logs de debug** para identificar onde o processo está falhando
+2. **Verificação das políticas RLS** para garantir permissões adequadas
+3. **Testes diretos no banco de dados** para isolar o problema
+
+Para acompanhar o diagnóstico, consulte o documento [SOLUCAO_PROBLEMA_ANIVERSARIO.md](SOLUCAO_PROBLEMA_ANIVERSARIO.md).

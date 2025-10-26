@@ -1,6 +1,15 @@
 import { useEffect, useRef, useState } from 'react'
 import { getJson, postJson, putJson, delJson } from '../lib/api'
 
+// Normaliza caminhos de imagem vindos do banco (nome de arquivo -> /templates/)
+function resolveAsset(src) {
+  if (!src) return ''
+  const s = String(src)
+  if (s.startsWith('data:') || /^https?:\/\//.test(s)) return s
+  if (s.startsWith('/')) return s
+  return `/templates/${s}`
+}
+
 export default function Crachas() {
   const [nome, setNome] = useState('')
   const [ts, setTs] = useState('')
@@ -235,8 +244,7 @@ export default function Crachas() {
         const canvasBack = await html2canvas(nodeBack, { scale: 2, useCORS: true, backgroundColor: null })
         imgBack = canvasBack.toDataURL('image/png')
       }
-      // Registrar frente e costa do crachá criado
-      saveCrachaFeito(imgFront, imgBack)
+      // Não registrar automaticamente ao exportar PDF
       const { jsPDF } = jspdf
       // Documento em milímetros para CR-80 86x54mm (modo paisagem ou retrato). Usaremos retrato 54x86.
       const pdf = new jsPDF({ unit: 'mm', format: [54, 86], orientation: 'portrait' })
@@ -378,18 +386,22 @@ export default function Crachas() {
 
   async function reprintCrachaFeito(item) {
     try {
-      const jspdf = await ensureJsPDF()
       let imgFront = item?.front || item?.thumb || ''
       let imgBack = item?.back || ''
       if (!imgFront) imgFront = await captureFront()
       if (!imgBack) imgBack = await captureBack()
-      const { jsPDF } = jspdf
-      const pdf = new jsPDF({ unit: 'mm', format: [54, 86], orientation: 'portrait' })
-      pdf.addImage(imgFront, 'PNG', 0, 0, 54, 86)
-      pdf.addPage()
-      pdf.addImage(imgBack || imgFront, 'PNG', 0, 0, 54, 86)
-      const blobUrl = pdf.output('bloburl')
-      window.open(blobUrl, '_blank')
+      const html = `<!doctype html><html><head><meta charset="utf-8"><title>Imprimir Crachá</title>
+        <style> body{margin:0;padding:10mm;background:#f0f0f0;font-family:sans-serif;} .page{width:86mm;height:54mm;margin:0 auto 10mm;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 0 4mm rgba(0,0,0,.2);} img{width:86mm;height:54mm;object-fit:cover;} @media print{ body{padding:0;background:#fff;} .page{box-shadow:none;margin:0 auto;} } </style>
+      </head><body>
+        <div class="page">${imgFront ? `<img src="${imgFront}" />` : ''}</div>
+        <div class="page">${imgBack ? `<img src="${imgBack}" />` : ''}</div>
+        <script>window.print(); setTimeout(()=>window.close(), 600);</script>
+      </body></html>`
+      const blob = new Blob([html], { type: 'text/html' })
+      const url = URL.createObjectURL(blob)
+      const w = window.open(url, '_blank')
+      if (!w) alert('Permita pop-ups para imprimir.')
+      setTimeout(() => URL.revokeObjectURL(url), 10000)
     } catch (e) {
       alert('Falha ao reimprimir o crachá: ' + (e?.message || 'tente novamente'))
     }
@@ -438,24 +450,27 @@ export default function Crachas() {
 
   function formatBR(iso) {
     if (!iso) return ''
-    const d = new Date(iso)
-    if (Number.isNaN(d.getTime())) {
-      const [y, m, dd] = String(iso).split('-')
-      return `${dd?.padStart(2, '0')}/${m?.padStart(2, '0')}/${y}`
+    const str = String(iso)
+    const m = str.match(/^(\d{4})-(\d{2})-(\d{2})/)
+    if (m) {
+      const [, y, mm, dd] = m
+      return `${dd}/${mm}/${y}`
     }
-    const dd = String(d.getDate()).padStart(2, '0')
-    const mm = String(d.getMonth() + 1).padStart(2, '0')
-    const yyyy = d.getFullYear()
-    return `${dd}/${mm}/${yyyy}`
+    const dt = new Date(str)
+    if (!Number.isNaN(dt.getTime())) {
+      const dd = String(dt.getUTCDate()).padStart(2, '0')
+      const mm = String(dt.getUTCMonth() + 1).padStart(2, '0')
+      const yyyy = dt.getUTCFullYear()
+      return `${dd}/${mm}/${yyyy}`
+    }
+    return ''
   }
 
   function handlePrint() {
-    // Captura frente e costa e registra antes de abrir impressão
-    Promise.all([captureFront(), captureBack()])
-      .then(([front, back]) => { if (front) saveCrachaFeito(front, back) })
-      .catch(() => { /* falha ao capturar imagens para impressão ignorada */ })
+    // Não registrar automaticamente ao imprimir; apenas abrir diálogo de impressão
     // Conversão aproximada: Preview 320x480px -> CR-80 86x54mm (orientação retrato)
     // Usaremos layout em mm com proporção semelhante: largura 54mm, altura 86mm
+    const bgFront = resolveAsset(frontImg)
     const html = `<!doctype html>
     <html lang="pt-BR">
     <head>
@@ -468,7 +483,7 @@ export default function Crachas() {
         body { margin: 0; padding: 0; background: #fff; }
         .print-root { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
         .badge { position: relative; width: 54mm; height: 86mm; overflow: hidden; border-radius: 2mm; }
-        .bg { position: absolute; inset: 0; background: ${frontImg ? `url('${frontImg}') center/cover no-repeat` : 'linear-gradient(180deg,#11558a 0%,#0a3560 100%)'}; }
+        .bg { position: absolute; inset: 0; background: ${frontImg ? `url('${resolveAsset(frontImg)}') center/cover no-repeat` : 'linear-gradient(180deg,#11558a 0%,#0a3560 100%)'}; }
         .content { position: absolute; inset: 0; padding: 4mm 4mm; display: flex; flex-direction: column; align-items: center; color: #fff; font-family: Montserrat, Arial, sans-serif; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         .brand { text-align:center; margin-top: 2mm; padding: 1mm 2mm; border-radius: 2mm; display: inline-block; }
         .brand .title { font-size: 6mm; margin: 0; letter-spacing: 0.3mm; color: #001f4d; font-weight: 800; }
@@ -607,7 +622,7 @@ export default function Crachas() {
           <div>
             <div ref={badgeRef} className="relative overflow-hidden rounded-lg border border-primary/40 shadow-md" style={{ width: 320, height: 480 }}>
               {/* Background template */}
-              <div style={{ position: 'absolute', inset: 0, background: frontImg ? `url(${frontImg}) center/cover no-repeat` : 'linear-gradient(180deg,#11558a 0%,#0a3560 100%)' }} />
+              <div style={{ position: 'absolute', inset: 0, background: frontImg ? `url(${resolveAsset(frontImg)}) center/cover no-repeat` : 'linear-gradient(180deg,#11558a 0%,#0a3560 100%)' }} />
               {/* Overlay content */}
               <div className="absolute inset-0 px-4 py-3 flex flex-col items-center text-white">
                 <div className="mt-2 text-center inline-block rounded px-2 py-1">
@@ -642,7 +657,7 @@ export default function Crachas() {
             <p className="text-xs text-gray-300 mt-2">Preview aproximado do crachá. O PDF final usa dimensões reais.</p>
             <div ref={backRef} className="relative overflow-hidden rounded-lg border border-primary/40 shadow-md mt-4" style={{ width: 320, height: 480 }}>
               {/* Background back side */}
-              <div style={{ position: 'absolute', inset: 0, background: backImgSel ? `url(${backImgSel}) center/cover no-repeat` : 'linear-gradient(180deg,#11558a 0%,#0a3560 100%)' }} />
+              <div style={{ position: 'absolute', inset: 0, background: backImgSel ? `url(${resolveAsset(backImgSel)}) center/cover no-repeat` : 'linear-gradient(180deg,#11558a 0%,#0a3560 100%)' }} />
             </div>
             <p className="text-xs text-gray-300 mt-2">Preview da costa (verso) do crachá.</p>
           </div>

@@ -15,8 +15,25 @@ export default function Dashboard() {
 
   function formatBR(iso) {
     if (!iso) return ''
+    
+    // Se for uma string no formato YYYY-MM-DD (com ou sem hora), parsear diretamente
+    if (typeof iso === 'string') {
+      // Extrair apenas a parte da data (YYYY-MM-DD)
+      const datePart = iso.split('T')[0];
+      if (datePart && datePart.match(/^\d{4}-\d{2}-\d{2}/)) {
+        const [y, m, day] = datePart.split('-')
+        if (y && m && day) {
+          return `${String(day).padStart(2, '0')}/${String(m).padStart(2, '0')}/${y}`
+        }
+      }
+    }
+    
+    // Para outros formatos, usar o objeto Date
     const d = new Date(iso)
-    if (Number.isNaN(d.getTime())) return iso
+    if (Number.isNaN(d.getTime())) {
+      return iso
+    }
+    
     const dd = String(d.getDate()).padStart(2, '0')
     const mm = String(d.getMonth() + 1).padStart(2, '0')
     const yyyy = d.getFullYear()
@@ -62,22 +79,45 @@ export default function Dashboard() {
 
   function nextBirthdayDate(iso) {
     if (!iso) return null
-    let month, day
-    const d = new Date(iso)
-    if (Number.isNaN(d.getTime())) {
-      const [, m, dd] = String(iso).split('-')
-      month = Number(m)
-      day = Number(dd)
+    let month, day, year
+
+    // Tratar strings (podem vir como YYYY-MM-DD ou YYYY-MM-DDTHH:mm:ssZ)
+    if (typeof iso === 'string') {
+      const datePart = iso.split('T')[0]
+      const match = datePart.match(/^(\d{4})-(\d{2})-(\d{2})$/)
+      if (match) {
+        year = Number(match[1])
+        month = Number(match[2])
+        day = Number(match[3])
+      } else {
+        const d = new Date(iso)
+        if (Number.isNaN(d.getTime())) return null
+        year = d.getFullYear()
+        month = d.getMonth() + 1
+        day = d.getDate()
+      }
     } else {
+      // Tratar como objeto Date
+      const d = new Date(iso)
+      if (Number.isNaN(d.getTime())) return null
+      year = d.getFullYear()
       month = d.getMonth() + 1
       day = d.getDate()
     }
+
     if (!month || !day) return null
     const today = new Date()
-    const year = today.getFullYear()
-    const candidate = new Date(year, month - 1, day)
+    const currentYear = today.getFullYear()
+
+    // Criar data de aniversário para este ano
+    let candidate = new Date(currentYear, month - 1, day)
+
+    // Se o aniversário já passou este ano, usar o próximo ano
     const todayMid = new Date(today.getFullYear(), today.getMonth(), today.getDate())
-    if (candidate < todayMid) candidate.setFullYear(year + 1)
+    if (candidate < todayMid) {
+      candidate = new Date(currentYear + 1, month - 1, day)
+    }
+
     return candidate
   }
 
@@ -87,17 +127,31 @@ export default function Dashboard() {
       const msDay = 24 * 60 * 60 * 1000
       const res = await getJson('/api/membros?page=1&pageSize=100')
       const list = res?.data || []
+      
+      if (import.meta.env.VITE_DEBUG_LOGS === 'true') {
+        console.log('Membros carregados para aniversariantes:', list)
+      }
+      
       const upcoming = (list || [])
         .filter(m => m && m.nome && m.aniversario)
         .map(m => {
+          if (import.meta.env.VITE_DEBUG_LOGS === 'true') {
+            console.log(`Processando aniversário de ${m.nome}:`, m.aniversario, typeof m.aniversario)
+          }
+          
           const next = nextBirthdayDate(m.aniversario)
           if (!next) return null
           const days = Math.ceil((next.getTime() - today.getTime()) / msDay)
-          return { nome: m.nome, data: next, dias: days }
+          return { nome: m.nome, data: next, dias: days, aniversarioOriginal: m.aniversario }
         })
         .filter(Boolean)
         .sort((a, b) => a.data.getTime() - b.data.getTime())
         .slice(0, 5)
+      
+      if (import.meta.env.VITE_DEBUG_LOGS === 'true') {
+        console.log('Aniversariantes processados:', upcoming)
+      }
+      
       setUpcomingBirthdays(upcoming)
     } catch (e) {
       if (e?.name === 'AbortError' || /aborted/i.test(e?.message || '')) return
@@ -125,6 +179,15 @@ export default function Dashboard() {
   useEffect(() => {
     loadBirthdays()
     loadUpcomingEvents()
+    // Atualizar aniversariantes periodicamente para manter as 5 próximas corretas
+    const refetchBirthdays = setInterval(loadBirthdays, 60 * 60 * 1000) // a cada 1h
+    // Atualizar ao retornar ao foco/visibilidade
+    const onVisibility = () => { if (!document.hidden) loadBirthdays() }
+    document.addEventListener('visibilitychange', onVisibility)
+    return () => {
+      clearInterval(refetchBirthdays)
+      document.removeEventListener('visibilitychange', onVisibility)
+    }
   }, [loadBirthdays, loadUpcomingEvents])
 
   useEffect(() => {
@@ -260,7 +323,12 @@ export default function Dashboard() {
           <ul className="text-sm text-gray-600 dark:text-gray-300 list-disc ml-6">
             {upcomingBirthdays.map((b) => (
               <li key={`${b.nome}-${b.data.toISOString()}`}>
-                <span className="dark:text-gray-100">{b.nome}</span> — {formatBR(b.data)}
+                <span className="dark:text-gray-100">{b.nome}</span> — {formatBR(b.aniversarioOriginal)}
+                {import.meta.env.VITE_DEBUG_LOGS === 'true' && (
+                  <span className="text-xs text-gray-500 dark:text-gray-400"> 
+                    {" "}(Calculado: {formatBR(b.data)})
+                  </span>
+                )}
               </li>
             ))}
           </ul>

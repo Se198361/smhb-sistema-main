@@ -11,9 +11,9 @@ INSERT INTO "Aviso" ("titulo", "conteudo", "descricao") VALUES
 ('Aviso de Teste 2', 'Conteúdo do aviso de teste 2', 'Descrição do aviso 2');
 
 -- Inserir dados de teste na tabela Membro
-INSERT INTO "Membro" ("nome", "endereco", "telefone") VALUES
-('Membro Teste 1', 'Rua Teste, 123', '(11) 99999-9999'),
-('Membro Teste 2', 'Av. Exemplo, 456', '(11) 88888-8888');
+INSERT INTO "Membro" ("nome", "endereco", "telefone", "aniversario") VALUES
+('Membro Teste 1', 'Rua Teste, 123', '(11) 99999-9999', '1990-05-15'),
+('Membro Teste 2', 'Av. Exemplo, 456', '(11) 88888-8888', '1985-12-25');
 
 -- Inserir dados de teste na tabela Evento
 INSERT INTO "Evento" ("titulo", "data", "local") VALUES
