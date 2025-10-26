@@ -21,12 +21,24 @@
 
 ### 2. Configurar Variáveis de Ambiente
 
-Na seção "Environment Variables" da Vercel, adicione as seguintes variáveis:
+Na seção "Environment Variables" da Vercel, adicione as variáveis abaixo (Production + Preview). Copie os valores do Supabase em Project Settings → API:
 
 ```
-VITE_SUPABASE_URL=https://kkyryjkjynjbhbcespzo.supabase.co
-VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtreXJ5amtqeW5qYmhiY2VzcHpvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjEyNTI4ODcsImV4cCI6MjA3NjgyODg4N30.jAqPEJmd5lvwn_3jFKBRY0OQ-MO4R_VtJ71-Uc2dynk
+# Frontend (Vite)
+VITE_SUPABASE_URL=https://SEU-PROJETO.supabase.co
+VITE_SUPABASE_ANON_KEY=SUA_CHAVE_ANON
+VITE_DEBUG_LOGS=false
+
+# Personalização visual (opcional)
+VITE_LOGO_URL=/smhb-logo.png
+VITE_EMBAIXADORES_LOGO_URL=/er-logo.png
+VITE_EMBAIXADORES_LOGO_STYLE=poster
 ```
+
+Observações:
+- As chaves precisam começar com `VITE_` para serem embutidas no bundle.
+- Após adicionar/alterar envs, rode "Redeploy" para reconstituir o build.
+- Não é necessário configurar variáveis server-only para este frontend (ex.: `SUPABASE_SERVICE_ROLE_KEY`).
 
 ### 3. Deploy
 
