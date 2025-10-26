@@ -89,6 +89,7 @@ createRoot(document.getElementById('root')).render(
               <Route path="/avisos" element={<PrivateRoute><Avisos /></PrivateRoute>} />
               <Route path="/crachas" element={<PrivateRoute><Crachas /></PrivateRoute>} />
               <Route path="/embaixadores" element={<PrivateRoute><Embaixadores /></PrivateRoute>} />
+              <Route path="*" element={<Navigate to="/login" />} />
             </Route>
           </Routes>
         </BrowserRouter>
