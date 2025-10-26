@@ -137,10 +137,18 @@ export async function getCurrentUser() {
 
 export async function logoutUser() {
   try {
-    const { error } = await supabase.auth.signOut()
-    if (error) throw error
+    const { error } = await supabase.auth.signOut({ scope: 'global' })
+    // Alguns navegadores podem reportar AbortError (net::ERR_ABORTED) em requisições de logout.
+    // Isso não impede o término da sessão. Ignoramos especificamente esse caso.
+    if (error && error.name !== 'AbortError' && !String(error.message || '').toLowerCase().includes('abort')) {
+      throw error
+    }
     return true
   } catch (error) {
+    if (error?.name === 'AbortError' || String(error?.message || '').toLowerCase().includes('abort')) {
+      // Silenciar AbortError para evitar ruído no console.
+      return true
+    }
     console.error('Erro no logout:', error)
     throw error
   }

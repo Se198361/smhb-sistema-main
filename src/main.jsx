@@ -75,7 +75,7 @@ createRoot(document.getElementById('root')).render(
         <BrowserRouter>
           <Routes>
             <Route element={<Layout />}>
-              <Route path="/" element={<Navigate to="/dashboard" />} />
+              <Route path="/" element={<Navigate to="/login" />} />
               <Route path="/login" element={<Login />} />
               <Route path="/redefinir-senha" element={<RedefinirSenha />} />
               <Route path="/cadastro" element={<Cadastro />} />

@@ -8,12 +8,7 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const devBypass = import.meta.env.VITE_DEV_AUTH_BYPASS === 'true'
-    if (devBypass) {
-      setUser({ id: 'dev-user', email: 'dev@example.com', nome: 'Dev' })
-      setLoading(false)
-      return
-    }
+    // Bypass de desenvolvimento desativado: sempre exigir autenticação real
 
     // Verificar sessão atual
     const checkSession = async () => {
