@@ -6,6 +6,7 @@ export default function Layout() {
   const [dark, setDark] = useState(false)
   const logoSrc = import.meta.env.VITE_LOGO_URL || '/smhb-logo.png'
   const { user, signOut } = useAuth()
+  const [loggingOut, setLoggingOut] = useState(false)
 
   useEffect(() => {
     const persisted = localStorage.getItem('theme-dark') === 'true'
@@ -32,11 +33,10 @@ export default function Layout() {
               onError={(e) => { e.currentTarget.src = '/vite.svg' }}
             />
             <span className="dot dot-muted" aria-hidden="true" />
-            <Link to="/" className="font-montserrat text-xl font-bold text-primary dark:text-light soft-link">SMHB Remidos do Senhor</Link>
-            <span className="badge badge-muted">Sistema v1.0</span>
+            <Link to="/" className="font-montserrat text-base font-medium text-primary dark:text-light soft-link">SMHB Remidos do Senhor</Link>
           </div>
           <nav className="flex gap-4 items-center">
-            <NavLink to="/dashboard" className={({ isActive }) => `${isActive ? 'text-accent' : 'text-primary dark:text-light'} soft-link`}>Dashboard</NavLink>
+            <NavLink to="/dashboard" className={({ isActive }) => `${isActive ? 'text-accent' : 'text-primary dark:text-light'} soft-link ml-10`}>Dashboard</NavLink>
             <NavLink to="/membros" className={({ isActive }) => `${isActive ? 'text-accent' : 'text-primary dark:text-light'} soft-link`}>Membros</NavLink>
             <NavLink to="/financas" className={({ isActive }) => `${isActive ? 'text-accent' : 'text-primary dark:text-light'} soft-link`}>Finanças</NavLink>
             <NavLink to="/eventos" className={({ isActive }) => `${isActive ? 'text-accent' : 'text-primary dark:text-light'} soft-link`}>Eventos</NavLink>
@@ -51,7 +51,13 @@ export default function Layout() {
             {user ? (
               <div className="flex items-center gap-2 ml-3">
                 <span className="text-sm text-primary dark:text-light font-semibold">{user.user_metadata?.name || user.email}</span>
-                <button onClick={signOut} className="btn-neon text-xs px-2 py-1">Sair</button>
+                <button
+                  onClick={async () => { setLoggingOut(true); try { await signOut(); } finally { setLoggingOut(false); } }}
+                  disabled={loggingOut}
+                  className="btn-neon text-xs px-2 py-1"
+                >
+                  {loggingOut ? 'Saindo...' : 'Sair'}
+                </button>
               </div>
             ) : (
               <NavLink to="/login" className={({ isActive }) => `${isActive ? 'text-accent' : 'text-primary dark:text-light'} soft-link`}>Entrar</NavLink>
@@ -62,9 +68,9 @@ export default function Layout() {
       <main className="max-w-7xl mx-auto px-4 py-6 fade-up">
         <Outlet />
       </main>
-      <footer className="mt-10 py-6 text-center text-sm text-gray-700 dark:text-gray-300">
-        <div className="flex items-center justify-center gap-3">
-          © {new Date().getFullYear()} SMHB Remidos do Senhor
+      <footer className="mt-10 py-6 text-center text-xs text-gray-600 dark:text-gray-400">
+        <div className="max-w-7xl mx-auto px-4 flex items-center justify-between">
+          <span className="opacity-80">© {new Date().getFullYear()} SMHB Remidos do Senhor · v1.0</span>
           <button onClick={toggleTheme} className="btn-neon text-xs px-2 py-1">{dark ? 'Claro' : 'Escuro'}</button>
         </div>
       </footer>
