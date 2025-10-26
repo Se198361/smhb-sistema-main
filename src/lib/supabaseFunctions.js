@@ -946,6 +946,25 @@ export async function getEmbaixadores(page = 1, pageSize = 10, search = '') {
   }
 }
 
+export async function getEmbaixadorById(id) {
+  try {
+    const { data, error } = await supabase
+      .from('Embaixador')
+      .select('*')
+      .eq('id', id)
+      .single()
+
+    if (error) {
+      const handledError = handleSupabaseError(error, 'Busca de embaixador por ID', 'Embaixador');
+      throw handledError;
+    }
+    return data
+  } catch (error) {
+    console.error('Erro ao buscar embaixador:', error)
+    throw error
+  }
+}
+
 export async function createEmbaixador(embaixadorData) {
   try {
     const { data, error } = await supabase
